@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Alexandra Samonenko](https://up.htmlacademy.ru/ecmascript/10/user/220409).
-* Наставник: `Неизвестно`.
+* Наставник: Данил Чушко.
 
 ---
 
