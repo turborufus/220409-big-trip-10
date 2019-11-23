@@ -15,3 +15,8 @@ node_modules/
 build/
 
 package-lock.json
+
+# Файлы сборки
+public/*.js
+public/*.js.map
+
