@@ -1,24 +1,10 @@
-import {getRandomArrayItem, getRandomIntegerNumber, getDateDaysAgo,  getRandomDate} from "../utils.js";
+import {getRandomArrayItem, getRandomIntegerNumber, getDateDaysAgo, getRandomDate} from "../utils.js";
 import {generateOffers} from "./offer.js";
 import {generateDestination} from "./destination.js";
+import {Destinations} from "../const.js";
 
-const Types = [`bus`, `check-in`, `drive`, `flight`, `restaurant`, 
+const Types = [`bus`, `check-in`, `drive`, `flight`, `restaurant`,
   `ship`, `sightseeing`, `taxi`, `train`, `transport`];
-
-const TypePlaceholder = {
-  'bus': `Bus to `,
-  'check-in': `Check into `,
-  'drive': `Drive to `,
-  'flight': `Flight to `,
-  'restaurant': `Restaurant in `,
-  'ship': `Ship to `,
-  'sightseeing': `Sightseeing in `,
-  'taxi': `Taxi to `,
-  'train': `Train to `,
-  'transport': `Transport to `
-};
-
-const Destinations = [`Geneva`, `Amsterdam`, `Saint Petersburg`, `Moscow`, `Brugge`];
 
 const generateEvent = () => {
   const daysAgo = getRandomIntegerNumber(1, 10);
@@ -35,4 +21,9 @@ const generateEvent = () => {
   };
 };
 
-export {generateEvent};
+const generateEvents = (count) => {
+  return new Array(count)
+    .fill(generateEvent());
+};
+
+export {generateEvent, generateEvents};

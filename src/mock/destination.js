@@ -1,21 +1,20 @@
-import {getRandomArrayItem, getRandomIntegerNumber} from "../utils.js";
-
-const DescriptionSentences = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit. `, 
-  `Cras aliquet varius magna, non porta ligula feugiat eget. `, 
-  `Fusce tristique felis at fermentum pharetra. `, 
+const DescriptionSentences = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit. `,
+  `Cras aliquet varius magna, non porta ligula feugiat eget. `,
+  `Fusce tristique felis at fermentum pharetra. `,
   `Aliquam id orci ut lectus varius viverra. `,
   `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. `,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. `, 
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. `, 
-  `Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. `, 
-  `Nunc fermentum tortor ac porta dapibus. `, 
+  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. `,
+  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. `,
+  `Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. `,
+  `Nunc fermentum tortor ac porta dapibus. `,
   `In rutrum ac purus sit amet tempus. `];
 
 const ImagesCount = 5;
 
 const generateDescription = () => {
-  return new Array(getRandomIntegerNumber(1, 3))
-    .fill(getRandomArrayItem(DescriptionSentences))
+  return DescriptionSentences
+    .filter(() => Math.random() > 0.5)
+    .slice(1, 3)
     .reduce((info, it) => {
       return info + it;
     });
