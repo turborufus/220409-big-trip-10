@@ -15,3 +15,49 @@ export const getRandomDate = (startDate, endDate) => {
 export const getDateDaysAgo = (dayCount) => {
   return new Date() - dayCount;
 };
+
+export const calculateDuration = (start, stop) => {
+  if (start.getTime() < stop.getTime()) {
+    const MillisecsInMinute = 1000 * 60;
+    const MillisecsInHour = MillisecsInMinute * 60;
+    const MillisecsInDay = MillisecsInHour * 24;
+
+    const diff = stop.getTime() - start.getTime();
+    const diffDays = Math.floor(diff / MillisecsInDay);
+    const diffHours = Math.floor((diff % MillisecsInDay) / MillisecsInHour);
+    const diffMinutes = Math.floor(((diff % MillisecsInDay) % MillisecsInHour) / MillisecsInMinute);
+
+    const minutesStr = (diffMinutes < 10) ? `0${diffMinutes}M` : `${diffMinutes}M`;
+    let daysStr = ``;
+    let hoursStr = ``;
+
+    if (diffDays > 0) {
+      daysStr = (diffDays < 10) ? `0${diffDays}D ` : `${diffDays}D `;
+      hoursStr = (diffHours < 10) ? `0${diffHours}H ` : `${diffHours}H `;
+    } else {
+      if (diffHours > 0) {
+        hoursStr = (diffHours < 10) ? `0${diffHours}H ` : `${diffHours}H `;
+      }
+    }
+
+    return `${daysStr}${hoursStr}${minutesStr}`;
+  } else {
+    return `00M`;
+  }
+};
+
+export const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() < 9) ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`;
+  const day = (date.getDate() < 10) ? `0${date.getDate()}` : `${date.getDate()}`;
+  const minute = (date.getMinutes() < 10) ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
+  const hour = (date.getHours() < 10) ? `0${date.getHours()}` : `${date.getHours()}`;
+
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+};
+
+export const formatTime = (date) => {
+  const minute = (date.getMinutes() < 10) ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
+  const hour = (date.getHours() < 10) ? `0${date.getHours()}` : `${date.getHours()}`;
+  return `${hour}:${minute}`;
+};
