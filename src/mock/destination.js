@@ -14,7 +14,7 @@ const ImagesCount = 5;
 const generateDescription = () => {
   return DescriptionSentences
     .filter(() => Math.random() > 0.5)
-    .slice(1, 3)
+    .slice(0, 3)
     .reduce((info, it) => {
       return info + it;
     });
