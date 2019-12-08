@@ -22,7 +22,10 @@ const generateDescription = () => {
 
 const generateImages = () => {
   return new Array(ImagesCount)
-    .fill(`http://picsum.photos/300/150?r=${Math.random()}`);
+    .fill(``)
+    .map(() => {
+      return `http://picsum.photos/300/150?r=${Math.random()}`;
+    });
 };
 
 const generateDestination = (name) => {

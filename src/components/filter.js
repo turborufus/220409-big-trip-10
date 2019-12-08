@@ -1,9 +1,8 @@
 const createFilterMarkup = (filter, isChecked) => {
   return (`
     <div class="trip-filters__filter">
-      <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" checked>
+      <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}" ${isChecked ? `checked` : ``}>
       <label class="trip-filters__filter-label" for="filter-${filter}">${filter}</label>
-      ${isChecked ? `checked` : ``}
     </div>
   `);
 };

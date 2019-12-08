@@ -13,7 +13,10 @@ export const getRandomDate = (startDate, endDate) => {
 };
 
 export const getDateDaysAgo = (dayCount) => {
-  return new Date() - dayCount;
+  const daysCountInMilliseconds = dayCount * 3600 * 1000 * 24;
+  const date = new Date();
+  date.setTime(date.getTime() - daysCountInMilliseconds);
+  return date;
 };
 
 export const calculateDuration = (start, stop) => {
@@ -53,7 +56,7 @@ export const formatDate = (date) => {
   const minute = (date.getMinutes() < 10) ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
   const hour = (date.getHours() < 10) ? `0${date.getHours()}` : `${date.getHours()}`;
 
-  return `${year}-${month}-${day}T${hour}:${minute}`;
+  return `${year}-${month}-${day}`;
 };
 
 export const formatTime = (date) => {

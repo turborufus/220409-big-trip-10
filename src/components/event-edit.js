@@ -74,15 +74,15 @@ const createPhotosMarkup = (photoURLs) => {
 };
 
 export const createTripEventEditTemplate = (event) => {
-  const {type, destination, start, stop, price, selectedOffers} = event;
-  const {destName, description, imgURLs} = destination;
+  const {type, destination, start, stop, price, offers: selectedOffers} = event;
+  const {name: destName, description, imgURLs} = destination;
   const availableOffers = generateOffers();
   const transferTypesGropuMarkup = TransferTypes.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
   const activityTypesGroupMarkup = ActivityTypes.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
   const destinationList = createDestinationListMarkup(Destinations).join(`\n`);
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
-  const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, selectedOffers
+  const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(selectedOffers)
     .map((it) => {
       return it.name;
     }).includes(offer.name))).join(`\n`);
