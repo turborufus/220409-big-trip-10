@@ -1,11 +1,9 @@
-export const generateTripDay = (date, counter) => {
-  return {
-    date,
-    counter
-  };
+export const generateTripDay = (date) => {
+  const dayInMilliseconds = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  return dayInMilliseconds;
 };
 
 export const generateTripDays = (dates) => {
-  return dates
-    .map((date, i) => generateTripDay(date, i + 1));
+  return new Set(dates
+    .map((date) => generateTripDay(date)));
 };
