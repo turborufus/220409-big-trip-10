@@ -9,7 +9,7 @@ const generateEvent = () => {
   const stopDate = getRandomDate(startDate, new Date());
   const types = TransferTypes.concat(ActivityTypes);
   const type = getRandomArrayItem(types);
-  const selectedOffers = generateOffers(type).filter(Math.random > 0.5).slice(0, 2);
+  const selectedOffers = generateOffers().filter(Math.random > 0.5).slice(0, 2);
 
   return {
     type,

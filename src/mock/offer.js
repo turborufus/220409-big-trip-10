@@ -1,19 +1,20 @@
 import {getRandomArrayItem, getRandomIntegerNumber} from "../utils.js";
 
-const Offers = [`Order Uber`, `Add luggage`, `Switch to comfort`,
+const OfferTypes = [`luggage`, `comfort`, `tickets`, `train`, `seats`, `lunch`, `breakfast`, `meal`];
+const OfferNames = [`Order Uber`, `Add luggage`, `Switch to comfort`,
   `Add breakfast`, `Book tickets`, `Lunch in city`];
 
-const generateOffer = (type, name) => {
+const generateOffer = (type) => {
   return {
     type,
-    name,
+    name: getRandomArrayItem(OfferNames),
     price: getRandomIntegerNumber(1, 10) * 10
   };
 };
 
-const generateOffers = (type) => {
-  return Offers
-    .map((it) => generateOffer(type, it));
+const generateOffers = () => {
+  return OfferTypes
+    .map((type) => generateOffer(type));
 };
 
 export {generateOffers};
