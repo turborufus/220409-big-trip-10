@@ -31,6 +31,19 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoMainElement = tripMainElement.querySelector(`.trip-info`);
 render(tripInfoMainElement, createTripInfoTemplate(events), `afterbegin`);
 
+
+const tripCost = events.map((event) => {
+  const offers = Array.from(event.offers);
+  const offersPrice = offers.map((offer) => offer.price).reduce((price, it) => {
+    return price + it;
+  });
+  return event.price + offersPrice;
+}).reduce((cost, price) => {
+  return cost + price;
+});
+const tripCostElement = tripMainElement.querySelector(`.trip-info__cost-value`);
+tripCostElement.innerHTML = tripCost;
+
 const menuTabs = generateMenuTabs();
 const filters = generateFilters();
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
