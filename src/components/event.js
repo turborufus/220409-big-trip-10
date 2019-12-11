@@ -1,4 +1,4 @@
-import {TypePlaceholder} from "../const.js";
+import {TYPE_PLACEHOLDER} from "../const.js";
 import {formatDate, formatTime, calculateDuration} from "../utils.js";
 
 const createScheduleMarkup = (start, stop) => {
@@ -37,7 +37,7 @@ export const createTripEventItemTemplate = (event) => {
   const destName = destination.name;
   const schedule = createScheduleMarkup(start, stop);
   const offersMarkup = createOffersMarkup(Array.from(offers).slice(0, 3)).join(`\n`);
-  const title = TypePlaceholder[type] + destName;
+  const title = TYPE_PLACEHOLDER[type] + destName;
   return (`
       <div class="event">
         <div class="event__type">

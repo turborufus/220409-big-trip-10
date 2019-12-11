@@ -1,5 +1,5 @@
 import {generateOffers} from "../mock/offer";
-import {TransferTypes, ActivityTypes, TypePlaceholder, Destinations} from "../const";
+import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const";
 import {formatTime} from "../utils";
 
 const createEventTypeItemMarkup = (type, isChecked) => {
@@ -77,9 +77,9 @@ export const createTripEventEditTemplate = (event) => {
   const {type, destination, start, stop, price, offers: selectedOffers} = event;
   const {name: destName, description, imgURLs} = destination;
   const availableOffers = generateOffers();
-  const transferTypesGropuMarkup = TransferTypes.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
-  const activityTypesGroupMarkup = ActivityTypes.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
-  const destinationList = createDestinationListMarkup(Destinations).join(`\n`);
+  const transferTypesGroupMarkup = TRANSER_TYPES.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
+  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
+  const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
   const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(selectedOffers)
@@ -101,7 +101,7 @@ export const createTripEventEditTemplate = (event) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${transferTypesGropuMarkup}
+                ${transferTypesGroupMarkup}
             </fieldset>
 
             <fieldset class="event__type-group">
@@ -113,7 +113,7 @@ export const createTripEventEditTemplate = (event) => {
 
         <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-            ${TypePlaceholder[type]}
+            ${TYPE_PLACEHOLDER[type]}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destName}" list="destination-list-1">
         <datalist id="destination-list-1">

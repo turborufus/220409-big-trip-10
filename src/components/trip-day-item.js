@@ -1,10 +1,10 @@
 import {formatDate} from "../utils";
-import {MonthNames} from "../const";
+import {MONTH_NAMES} from "../const";
 
 export const createTripDayItemTemplate = (dayInMilliseconds, counter) => {
   const date = new Date(dayInMilliseconds);
   const dateValue = formatDate(date);
-  const dateTitle = `${MonthNames[date.getMonth()].toUpperCase()} ${date.getDate()}`;
+  const dateTitle = `${MONTH_NAMES[date.getMonth()].toUpperCase()} ${date.getDate()}`;
   return (`
       <li class="trip-days__item  day">
           <div class="day__info">

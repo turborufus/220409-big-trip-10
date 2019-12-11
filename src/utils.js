@@ -19,6 +19,13 @@ export const getDateDaysAgo = (dayCount) => {
   return date;
 };
 
+export const getDateDaysAfter = (dayCount) => {
+  const daysCountInMilliseconds = dayCount * 3600 * 1000 * 24;
+  const date = new Date();
+  date.setTime(date.getTime() + daysCountInMilliseconds);
+  return date;
+};
+
 export const calculateDuration = (start, stop) => {
   if (start.getTime() < stop.getTime()) {
     const MillisecsInMinute = 1000 * 60;

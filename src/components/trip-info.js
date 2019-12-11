@@ -1,11 +1,11 @@
-import {MonthNames} from "../const";
+import {MONTH_NAMES} from "../const";
 
 const createInfoDatesString = (start, stop) => {
   if (start.getMonth() === stop.getMonth()) {
-    return `${MonthNames[start.getMonth()].toUpperCase()} ${start.getDate()}&nbsp;&mdash;&nbsp;${stop.getDate()}`;
+    return `${MONTH_NAMES[start.getMonth()].toUpperCase()} ${start.getDate()}&nbsp;&mdash;&nbsp;${stop.getDate()}`;
   } else {
-    const startDate = `${MonthNames[start.getMonth()].toUpperCase()} ${start.getDate()}`;
-    const stopDate = `${MonthNames[stop.getMonth()].toUpperCase()} ${stop.getDate()}`;
+    const startDate = `${MONTH_NAMES[start.getMonth()].toUpperCase()} ${start.getDate()}`;
+    const stopDate = `${MONTH_NAMES[stop.getMonth()].toUpperCase()} ${stop.getDate()}`;
     return `${startDate}&nbsp;&mdash;&nbsp;${stopDate}`;
   }
 };
