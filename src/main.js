@@ -10,12 +10,9 @@ import {generateMenuTabs} from "./mock/menuTab.js";
 import {generateFilters} from "./mock/filter.js";
 import {generateEvents} from "./mock/event.js";
 import {generateTripDays} from "./mock/trip-day.js";
+import {render, RENDER_POSITION} from "./utils.js";
 
 const EVENT_COUNT = 10;
-
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const compareDates = (dateA, dateB) => {
   return dateA.getTime() - dateB.getTime();
