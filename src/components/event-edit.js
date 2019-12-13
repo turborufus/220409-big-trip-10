@@ -1,6 +1,6 @@
-import {generateOffers} from "../mock/offer";
-import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const";
-import {formatTime} from "../utils";
+import {generateOffers} from "../mock/offer.js";
+import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
+import {formatTime, createElement} from "../utils.js";
 
 const createEventTypeItemMarkup = (type, isChecked) => {
   return (`
@@ -73,7 +73,7 @@ const createPhotosMarkup = (photoURLs) => {
     });
 };
 
-export const createTripEventEditTemplate = (event) => {
+const createTripEventEditTemplate = (event) => {
   const {type, destination, start, stop, price, offers: selectedOffers} = event;
   const {name: destName, description, imgURLs} = destination;
   const availableOffers = generateOffers();
@@ -157,3 +157,26 @@ export const createTripEventEditTemplate = (event) => {
     </form>
   `);
 };
+
+export default class EventEdit {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
