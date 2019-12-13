@@ -1,5 +1,5 @@
 import {TYPE_PLACEHOLDER} from "../const.js";
-import {formatDate, formatTime, calculateDuration} from "../utils.js";
+import {formatDate, formatTime, calculateDuration, createElement} from "../utils.js";
 
 const createScheduleMarkup = (start, stop) => {
   const startDate = formatDate(start);
@@ -32,7 +32,7 @@ const createOffersMarkup = (offers) => {
     });
 };
 
-export const createTripEventItemTemplate = (event) => {
+const createTripEventItemTemplate = (event) => {
   const {type, destination, start, stop, price, offers} = event;
   const destName = destination.name;
   const schedule = createScheduleMarkup(start, stop);
@@ -62,3 +62,26 @@ export const createTripEventItemTemplate = (event) => {
       </div>
   `);
 };
+
+export default class Event {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventItemTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
