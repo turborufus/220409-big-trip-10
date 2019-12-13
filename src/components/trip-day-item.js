@@ -14,7 +14,7 @@ const createTripDayItemTemplate = (dayInMilliseconds, counter) => {
       </li>
   `);
 };
-export default class {
+export default class DayItem {
   constructor(date, counter) {
     this._date = date;
     this._counter = counter;
