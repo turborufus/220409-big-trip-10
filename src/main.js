@@ -46,7 +46,9 @@ const tripControlsH2FilterElement = tripControlsElement.querySelector(`h2:nth-of
 tripControlsH2MenuElement.remove();
 tripControlsH2FilterElement.remove();
 
+render(tripControlsElement, tripControlsH2MenuElement, RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, new SiteMenuComponent(menuTabs).getElement(), RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, tripControlsH2FilterElement, RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_POSITION.BEFOREEND);
 
 const pageMainElement = document.querySelector(`.page-main`);
