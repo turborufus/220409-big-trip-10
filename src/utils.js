@@ -8,7 +8,7 @@ export const DAYS_THROUGH = {
 export const RENDER_POSITION = {
   BEFOREEND: `beforeend`,
   AFTERBEGIN: `afterbegin`,
-}
+};
 
 export const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length - 1);
@@ -91,7 +91,7 @@ export const render = (container, element, place) => {
       container.prepend(element);
       break;
     case RENDER_POSITION.BEFOREEND:
-      container.append(element)
+      container.append(element);
       break;
   }
 };

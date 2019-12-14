@@ -1,11 +1,11 @@
-import {createTripMenuTemplate} from "./components/menu.js";
-import {createFilterTemplate} from "./components/filter.js";
-import {createTripInfoTemplate} from "./components/trip-info.js";
-import {createTripEventEditTemplate} from "./components/event-edit.js";
-import {createTripDaysTemplate} from "./components/trip-days.js";
-import {createTripDayItemTemplate} from "./components/trip-day-item.js";
-import {createTripEventsListTemplate} from "./components/events-list.js";
-import {createTripEventItemTemplate} from "./components/event.js";
+import DayItemComponent from "./components/trip-day-item.js";
+import DayListComponent from "./components/trip-days.js";
+import EventComponent from "./components/event.js";
+import EventEditComponent from "./components/event-edit.js";
+import EventListComponent from "./components/events-list.js";
+import FilterComponent from "./components/filter.js";
+import SiteMenuComponent from "./components/menu.js";
+import TripInfoComponent from "./components/trip-info.js";
 import {generateMenuTabs} from "./mock/menuTab.js";
 import {generateFilters} from "./mock/filter.js";
 import {generateEvents} from "./mock/event.js";
@@ -20,13 +20,10 @@ const compareDates = (dateA, dateB) => {
 
 const events = generateEvents(EVENT_COUNT);
 events.sort((eventA, eventB) => compareDates(eventA.start, eventB.start));
-const tripDays = generateTripDays(events.map((event) => {
-  return event.start;
-}));
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoMainElement = tripMainElement.querySelector(`.trip-info`);
-render(tripInfoMainElement, createTripInfoTemplate(events), `afterbegin`);
+render(tripInfoMainElement, new TripInfoComponent(events).getElement(), RENDER_POSITION.AFTERBEGIN);
 
 
 const tripCost = events.map((event) => {
@@ -46,37 +43,43 @@ const filters = generateFilters();
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripControlsH2MenuElement = tripControlsElement.querySelector(`h2:nth-of-type(1)`);
 const tripControlsH2FilterElement = tripControlsElement.querySelector(`h2:nth-of-type(2)`);
+tripControlsH2MenuElement.remove();
+tripControlsH2FilterElement.remove();
 
-render(tripControlsH2MenuElement, createTripMenuTemplate(menuTabs), `afterend`);
-render(tripControlsH2FilterElement, createFilterTemplate(filters), `afterend`);
+render(tripControlsElement, new SiteMenuComponent(menuTabs).getElement(), RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_POSITION.BEFOREEND);
 
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
 
-render(tripEventsElement, createTripDaysTemplate(), `beforeend`);
+const tripDayListElement = new DayListComponent().getElement();
+render(tripEventsElement, tripDayListElement, RENDER_POSITION.BEFOREEND);
 
-const tripDaysElement = tripEventsElement.querySelector(`.trip-days`);
-Array.from(tripDays).sort()
-  .forEach((dayInMilliseconds, i) =>
-    render(tripDaysElement, createTripDayItemTemplate(dayInMilliseconds, i + 1), `beforeend`));
+const tripDays = generateTripDays(events.map((event) => {
+  return event.start;
+}));
 
-const tripDayItemElements = tripDaysElement.querySelectorAll(`.trip-days__item`);
-tripDayItemElements.forEach((tripDayItemElement, i) => {
-  const dayDateElement = tripDayItemElement.querySelector(`.day__date`);
+const tripDayItemComponents = Array.from(tripDays).sort().map((dayInMilliseconds, i) => {
+  return new DayItemComponent(new Date(dayInMilliseconds), i + 1);
+});
 
-  render(tripDayItemElement, createTripEventsListTemplate(), `beforeend`);
-  const tripEventsListElement = tripDayItemElement.querySelector(`.trip-events__list`);
+tripDayItemComponents.forEach((tripDayItemComponent, i) => {
+  const tripEventListElement = new EventListComponent().getElement();
+  const tripDayItemElement = tripDayItemComponent.getElement();
+  render(tripDayItemElement, tripEventListElement, RENDER_POSITION.BEFOREEND);
 
   if (i === 0) {
-    render(tripEventsListElement, createTripEventEditTemplate(events[0]), `beforeend`);
+    render(tripEventListElement, new EventEditComponent(events[0]).getElement(), RENDER_POSITION.BEFOREEND);
   }
 
   events.slice(1, events.length)
     .filter((event) => {
-      const dayDate = new Date(dayDateElement.dateTime);
+      const dayDate = new Date(tripDayItemComponent.date);
       return (event.start.getDate() === dayDate.getDate()
         && event.start.getMonth() === dayDate.getMonth()
         && event.start.getFullYear() === dayDate.getFullYear());
     })
-    .map((event) => render(tripEventsListElement, createTripEventItemTemplate(event), `beforeend`));
+    .map((event) => render(tripEventListElement, new EventComponent(event).getElement(), RENDER_POSITION.BEFOREEND));
+
+  render(tripDayListElement, tripDayItemElement, RENDER_POSITION.BEFOREEND);
 });

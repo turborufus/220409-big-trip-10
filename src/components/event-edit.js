@@ -27,8 +27,7 @@ const formatDateValue = (date) => {
 const createTimeMarkup = (start, stop) => {
   const startValue = formatDateValue(start);
   const stopValue = formatDateValue(stop);
-  return (`
-    <label class="visually-hidden" for="event-start-time-1">
+  return (`<label class="visually-hidden" for="event-start-time-1">
       From
     </label>
     <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startValue}">
@@ -41,8 +40,7 @@ const createTimeMarkup = (start, stop) => {
 };
 
 const createPriceMarkup = (price) => {
-  return (`
-    <label class="event__label" for="event-price-1">
+  return (`<label class="event__label" for="event-price-1">
       <span class="visually-hidden">Price</span>
       &euro;
     </label>
@@ -52,8 +50,7 @@ const createPriceMarkup = (price) => {
 
 const createOfferMarkup = (offer, isChecked) => {
   const {type, name, price} = offer;
-  return (`
-    <div class="event__offer-selector">
+  return (`<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}" ${isChecked ? `checked` : ``}>
       <label class="event__offer-label" for="event-offer-${type}-1">
           <span class="event__offer-title">${name}</span>
@@ -88,8 +85,7 @@ const createTripEventEditTemplate = (event) => {
     }).includes(offer.name))).join(`\n`);
   const photosMarkup = createPhotosMarkup(imgURLs).join(`\n`);
 
-  return (`
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
+  return (`<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">

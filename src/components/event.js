@@ -22,8 +22,7 @@ const createScheduleMarkup = (start, stop) => {
 const createOffersMarkup = (offers) => {
   return offers
     .map((offer) => {
-      return (`
-        <li class="event__offer">
+      return (`<li class="event__offer">
           <span class="event__offer-title">${offer.name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -38,8 +37,7 @@ const createTripEventItemTemplate = (event) => {
   const schedule = createScheduleMarkup(start, stop);
   const offersMarkup = createOffersMarkup(Array.from(offers).slice(0, 3)).join(`\n`);
   const title = TYPE_PLACEHOLDER[type] + destName;
-  return (`
-      <div class="event">
+  return (`<div class="event">
         <div class="event__type">
             <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>

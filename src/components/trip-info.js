@@ -28,8 +28,7 @@ const createTripInfoTemplate = (events) => {
   const startDate = events[0].start;
   const stopDate = events[events.length - 1].stop;
   const infoDates = createInfoDatesString(startDate, stopDate);
-  return (`
-      <div class="trip-info__main">
+  return (`<div class="trip-info__main">
           <h1 class="trip-info__title">${title}</h1>
           <p class="trip-info__dates">${infoDates}</p>
       </div>
