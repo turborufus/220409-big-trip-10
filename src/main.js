@@ -61,13 +61,13 @@ const tripDays = generateTripDays(events.map((event) => {
   return event.start;
 }));
 
-const tripDayItemComponents = Array.from(tripDays).sort().map((dayInMilliseconds, i) => {
-  return new DayItemComponent(new Date(dayInMilliseconds), i + 1);
+const tripDayItemElements = Array.from(tripDays).sort().map((dayInMilliseconds, i) => {
+  return new DayItemComponent(new Date(dayInMilliseconds), i + 1).getElement();
 });
 
-tripDayItemComponents.forEach((tripDayItemComponent, i) => {
+tripDayItemElements.forEach((tripDayItemElement, i) => {
   const tripEventListElement = new EventListComponent().getElement();
-  const tripDayItemElement = tripDayItemComponent.getElement();
+  const dayDateElement = tripDayItemElement.querySelector(`.day__date`);
   render(tripDayItemElement, tripEventListElement, RENDER_POSITION.BEFOREEND);
 
   if (i === 0) {
@@ -76,7 +76,7 @@ tripDayItemComponents.forEach((tripDayItemComponent, i) => {
 
   events.slice(1, events.length)
     .filter((event) => {
-      const dayDate = new Date(tripDayItemComponent.date);
+      const dayDate = new Date(dayDateElement.dateTime);
       return (event.start.getDate() === dayDate.getDate()
         && event.start.getMonth() === dayDate.getMonth()
         && event.start.getFullYear() === dayDate.getFullYear());

@@ -35,8 +35,4 @@ export default class DayItem {
   removeElement() {
     this._element = null;
   }
-
-  get date() {
-    return this._date;
-  }
 }
