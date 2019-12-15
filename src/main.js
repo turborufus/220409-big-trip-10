@@ -14,6 +14,27 @@ import {render, RENDER_POSITION} from "./utils.js";
 
 const EVENT_COUNT = 10;
 
+const renderEvent = (tripEventListElement, event) => {
+  const eventComponent = new EventComponent(event);
+  const eventEditComponent = new EventEditComponent(event);
+
+  const roolupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
+  roolupButton.addEventListener(`click`, () => {
+    tripEventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  });
+
+  const saveEventButton = eventEditComponent.getElement().querySelector(`.event__save-btn`);
+  saveEventButton.addEventListener(`click`, () => {
+    tripEventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  });
+  const resetEventButton = eventEditComponent.getElement().querySelector(`.event__reset-btn`);
+  resetEventButton.addEventListener(`click`, () => {
+    tripEventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  });
+
+  render(tripEventListElement, eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
+};
+
 const compareDates = (dateA, dateB) => {
   return dateA.getTime() - dateB.getTime();
 };
@@ -65,23 +86,18 @@ const tripDayItemElements = Array.from(tripDays).sort().map((dayInMilliseconds, 
   return new DayItemComponent(new Date(dayInMilliseconds), i + 1).getElement();
 });
 
-tripDayItemElements.forEach((tripDayItemElement, i) => {
+tripDayItemElements.forEach((tripDayItemElement) => {
   const tripEventListElement = new EventListComponent().getElement();
   const dayDateElement = tripDayItemElement.querySelector(`.day__date`);
   render(tripDayItemElement, tripEventListElement, RENDER_POSITION.BEFOREEND);
 
-  if (i === 0) {
-    render(tripEventListElement, new EventEditComponent(events[0]).getElement(), RENDER_POSITION.BEFOREEND);
-  }
-
-  events.slice(1, events.length)
-    .filter((event) => {
-      const dayDate = new Date(dayDateElement.dateTime);
-      return (event.start.getDate() === dayDate.getDate()
+  events.filter((event) => {
+    const dayDate = new Date(dayDateElement.dateTime);
+    return (event.start.getDate() === dayDate.getDate()
         && event.start.getMonth() === dayDate.getMonth()
         && event.start.getFullYear() === dayDate.getFullYear());
-    })
-    .map((event) => render(tripEventListElement, new EventComponent(event).getElement(), RENDER_POSITION.BEFOREEND));
+  })
+  .map((event) => renderEvent(tripEventListElement, event));
 
   render(tripDayListElement, tripDayItemElement, RENDER_POSITION.BEFOREEND);
 });
