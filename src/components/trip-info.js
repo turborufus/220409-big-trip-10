@@ -1,4 +1,5 @@
-import {MONTH_NAMES} from "../const";
+import {MONTH_NAMES} from "../const.js";
+import {createElement} from "../utils.js";
 
 const createInfoDatesString = (start, stop) => {
   if (start.getMonth() === stop.getMonth()) {
@@ -10,7 +11,7 @@ const createInfoDatesString = (start, stop) => {
   }
 };
 
-export const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (events) => {
   const destinations = events.map((event) => {
     return event.destination.name;
   });
@@ -27,10 +28,32 @@ export const createTripInfoTemplate = (events) => {
   const startDate = events[0].start;
   const stopDate = events[events.length - 1].stop;
   const infoDates = createInfoDatesString(startDate, stopDate);
-  return (`
-      <div class="trip-info__main">
+  return (`<div class="trip-info__main">
           <h1 class="trip-info__title">${title}</h1>
           <p class="trip-info__dates">${infoDates}</p>
       </div>
   `);
 };
+
+export default class TripInfo {
+  constructor(events) {
+    this._events = events;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,5 +1,5 @@
 import {TYPE_PLACEHOLDER} from "../const.js";
-import {formatDate, formatTime, calculateDuration} from "../utils.js";
+import {formatDate, formatTime, calculateDuration, createElement} from "../utils.js";
 
 const createScheduleMarkup = (start, stop) => {
   const startDate = formatDate(start);
@@ -22,8 +22,7 @@ const createScheduleMarkup = (start, stop) => {
 const createOffersMarkup = (offers) => {
   return offers
     .map((offer) => {
-      return (`
-        <li class="event__offer">
+      return (`<li class="event__offer">
           <span class="event__offer-title">${offer.name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -32,14 +31,13 @@ const createOffersMarkup = (offers) => {
     });
 };
 
-export const createTripEventItemTemplate = (event) => {
+const createTripEventItemTemplate = (event) => {
   const {type, destination, start, stop, price, offers} = event;
   const destName = destination.name;
   const schedule = createScheduleMarkup(start, stop);
   const offersMarkup = createOffersMarkup(Array.from(offers).slice(0, 3)).join(`\n`);
   const title = TYPE_PLACEHOLDER[type] + destName;
-  return (`
-      <div class="event">
+  return (`<div class="event">
         <div class="event__type">
             <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
@@ -62,3 +60,26 @@ export const createTripEventItemTemplate = (event) => {
       </div>
   `);
 };
+
+export default class Event {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventItemTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
