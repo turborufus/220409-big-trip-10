@@ -76,14 +76,14 @@ tripCostElement.innerHTML = tripCost;
 const menuTabs = generateMenuTabs();
 const filters = generateFilters();
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
-const tripControlsH2MenuElement = tripControlsElement.querySelector(`h2:nth-of-type(1)`);
-const tripControlsH2FilterElement = tripControlsElement.querySelector(`h2:nth-of-type(2)`);
-tripControlsH2MenuElement.remove();
-tripControlsH2FilterElement.remove();
+const menuTitleElement = tripControlsElement.querySelector(`h2:nth-of-type(1)`);
+const filterTitleElement = tripControlsElement.querySelector(`h2:nth-of-type(2)`);
+menuTitleElement.remove();
+filterTitleElement.remove();
 
-render(tripControlsElement, tripControlsH2MenuElement, RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, menuTitleElement, RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, new SiteMenuComponent(menuTabs).getElement(), RENDER_POSITION.BEFOREEND);
-render(tripControlsElement, tripControlsH2FilterElement, RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, filterTitleElement, RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_POSITION.BEFOREEND);
 
 const pageMainElement = document.querySelector(`.page-main`);
