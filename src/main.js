@@ -15,22 +15,35 @@ import {render, RENDER_POSITION} from "./utils.js";
 const EVENT_COUNT = 10;
 
 const renderEvent = (tripEventListElement, event) => {
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      replaceEditToEvent();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  const replaceEditToEvent = () => {
+    tripEventListElement.replaceChild(eventComponent.getElement(), editComponent.getElement());
+  };
+
+  const replaceEventToEdit = () => {
+    tripEventListElement.replaceChild(editComponent.getElement(), eventComponent.getElement());
+  };
+
   const eventComponent = new EventComponent(event);
-  const eventEditComponent = new EventEditComponent(event);
-
-  const roolupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-  roolupButton.addEventListener(`click`, () => {
-    tripEventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  const rollupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
+  rollupButton.addEventListener(`click`, () => {
+    replaceEventToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  const saveEventButton = eventEditComponent.getElement().querySelector(`.event__save-btn`);
-  saveEventButton.addEventListener(`click`, () => {
-    tripEventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
-  });
-  const resetEventButton = eventEditComponent.getElement().querySelector(`.event__reset-btn`);
-  resetEventButton.addEventListener(`click`, () => {
-    tripEventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
-  });
+  const editComponent = new EventEditComponent(event);
+  const saveEventButton = editComponent.getElement().querySelector(`.event__save-btn`);
+  const resetEventButton = editComponent.getElement().querySelector(`.event__reset-btn`);
+  saveEventButton.addEventListener(`click`, replaceEditToEvent);
+  resetEventButton.addEventListener(`click`, replaceEditToEvent);
 
   render(tripEventListElement, eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
 };
