@@ -12,22 +12,27 @@ const createInfoDatesString = (start, stop) => {
 };
 
 const createTripInfoTemplate = (events) => {
-  const destinations = events.map((event) => {
-    return event.destination.name;
-  });
   let title = ``;
-  if (destinations.length > 3) {
-    title = `${destinations[0]} &mdash; ...  &mdash; ${destinations[destinations.length - 1]}`;
-  } else {
-    title = destinations.reduce((accumulator, destination, i) => {
-      accumulator += (i === 0) ? `${destination}` : ` &mdash; ${destination}`;
-      return accumulator;
+  let infoDates = ``;
+  if (events.length > 0) {
+    const destinations = events.map((event) => {
+      return event.destination.name;
     });
+
+    if (destinations.length > 3) {
+      title = `${destinations[0]} &mdash; ...  &mdash; ${destinations[destinations.length - 1]}`;
+    } else {
+      title = destinations.reduce((accumulator, destination, i) => {
+        accumulator += (i === 0) ? `${destination}` : ` &mdash; ${destination}`;
+        return accumulator;
+      });
+    }
+
+    const startDate = events[0].start;
+    const stopDate = events[events.length - 1].stop;
+    infoDates = createInfoDatesString(startDate, stopDate);
   }
 
-  const startDate = events[0].start;
-  const stopDate = events[events.length - 1].stop;
-  const infoDates = createInfoDatesString(startDate, stopDate);
   return (`<div class="trip-info__main">
           <h1 class="trip-info__title">${title}</h1>
           <p class="trip-info__dates">${infoDates}</p>
