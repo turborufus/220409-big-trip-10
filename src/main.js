@@ -4,6 +4,7 @@ import EventComponent from "./components/event.js";
 import EventEditComponent from "./components/event-edit.js";
 import EventListComponent from "./components/events-list.js";
 import FilterComponent from "./components/filter.js";
+import NoEventsComponent from "./components/no-events.js";
 import SiteMenuComponent from "./components/menu.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {generateMenuTabs} from "./mock/menuTab.js";
@@ -59,8 +60,8 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoMainElement = tripMainElement.querySelector(`.trip-info`);
 render(tripInfoMainElement, new TripInfoComponent(events).getElement(), RENDER_POSITION.AFTERBEGIN);
 
-
-const tripCost = events.map((event) => {
+const isEmptyEventList = events.length === 0;
+const tripCost = isEmptyEventList ? 0 : events.map((event) => {
   const offers = Array.from(event.offers);
   const offersPrice = offers.map((offer) => offer.price).reduce((price, it) => {
     return price + it;
@@ -88,29 +89,34 @@ render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_PO
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
 
-const tripDayListElement = new DayListComponent().getElement();
-render(tripEventsElement, tripDayListElement, RENDER_POSITION.BEFOREEND);
+if (isEmptyEventList) {
+  render(tripEventsElement, new NoEventsComponent().getElement(), RENDER_POSITION.BEFOREEND);
+} else {
+  const tripDayListElement = new DayListComponent().getElement();
+  render(tripEventsElement, tripDayListElement, RENDER_POSITION.BEFOREEND);
 
-const tripDays = generateTripDays(events.map((event) => {
-  return event.start;
-}));
+  const tripDays = generateTripDays(events.map((event) => {
+    return event.start;
+  }));
 
-const tripDayItemElements = Array.from(tripDays).sort().map((dayInMilliseconds, i) => {
-  return new DayItemComponent(new Date(dayInMilliseconds), i + 1).getElement();
-});
+  const tripDayItemElements = Array.from(tripDays).sort().map((dayInMilliseconds, i) => {
+    return new DayItemComponent(new Date(dayInMilliseconds), i + 1).getElement();
+  });
 
-tripDayItemElements.forEach((tripDayItemElement) => {
-  const tripEventListElement = new EventListComponent().getElement();
-  const dayDateElement = tripDayItemElement.querySelector(`.day__date`);
-  render(tripDayItemElement, tripEventListElement, RENDER_POSITION.BEFOREEND);
+  tripDayItemElements.forEach((tripDayItemElement) => {
+    const tripEventListElement = new EventListComponent().getElement();
+    const dayDateElement = tripDayItemElement.querySelector(`.day__date`);
+    render(tripDayItemElement, tripEventListElement, RENDER_POSITION.BEFOREEND);
 
-  events.filter((event) => {
-    const dayDate = new Date(dayDateElement.dateTime);
-    return (event.start.getDate() === dayDate.getDate()
-        && event.start.getMonth() === dayDate.getMonth()
-        && event.start.getFullYear() === dayDate.getFullYear());
-  })
-  .map((event) => renderEvent(tripEventListElement, event));
+    events.filter((event) => {
+      const dayDate = new Date(dayDateElement.dateTime);
+      return (event.start.getDate() === dayDate.getDate()
+          && event.start.getMonth() === dayDate.getMonth()
+          && event.start.getFullYear() === dayDate.getFullYear());
+    })
+    .map((event) => renderEvent(tripEventListElement, event));
 
-  render(tripDayListElement, tripDayItemElement, RENDER_POSITION.BEFOREEND);
-});
+    render(tripDayListElement, tripDayItemElement, RENDER_POSITION.BEFOREEND);
+  });
+}
+
