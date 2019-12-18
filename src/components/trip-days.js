@@ -1,4 +1,4 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createTripDaysTemplate = () => {
   return (`<ul class="trip-days"></ul>`);

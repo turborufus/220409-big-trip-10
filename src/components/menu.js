@@ -1,4 +1,4 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createMenuTabMarkup = (tabName, isActive) => {
   return (`<a class="trip-tabs__btn  ${isActive ? `trip-tabs__btn--active` : ``}" href="#">${tabName}</a>

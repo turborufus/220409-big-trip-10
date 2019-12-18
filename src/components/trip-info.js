@@ -1,5 +1,5 @@
 import {MONTH_NAMES} from "../const.js";
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createInfoDatesString = (start, stop) => {
   if (start.getMonth() === stop.getMonth()) {

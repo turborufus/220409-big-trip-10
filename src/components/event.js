@@ -1,6 +1,6 @@
 import {TYPE_PLACEHOLDER} from "../const.js";
 import {formatDate, formatTime, calculateDuration} from "../utils.js";
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createScheduleMarkup = (start, stop) => {
   const startDate = formatDate(start);

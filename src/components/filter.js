@@ -1,4 +1,4 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createFilterMarkup = (filter, isChecked) => {
   return (`<div class="trip-filters__filter">

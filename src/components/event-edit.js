@@ -1,7 +1,7 @@
 import {generateOffers} from "../mock/offer.js";
 import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
 import {formatTime} from "../utils.js";
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createEventTypeItemMarkup = (type, isChecked) => {
   return (`

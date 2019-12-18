@@ -1,6 +1,6 @@
 import {formatDate} from "../utils.js";
 import {MONTH_NAMES} from "../const.js";
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createTripDayItemTemplate = (dayInMilliseconds, counter) => {
   const date = new Date(dayInMilliseconds);
