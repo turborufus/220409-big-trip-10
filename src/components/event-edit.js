@@ -164,4 +164,14 @@ export default class EventEdit extends AbstractComponent {
   getTemplate() {
     return createTripEventEditTemplate(this._event);
   }
+
+  setSaveButtonHandler(handler) {
+    this.getElement().querySelector(`.event__save-btn`)
+      .addEventListener(`click`, handler);
+  }
+
+  setResetButtonHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+  }
 }

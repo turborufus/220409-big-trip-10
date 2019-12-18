@@ -11,7 +11,7 @@ import {generateMenuTabs} from "./mock/menuTab.js";
 import {generateFilters} from "./mock/filter.js";
 import {generateEvents} from "./mock/event.js";
 import {generateTripDays} from "./mock/trip-day.js";
-import {render, RENDER_POSITION} from "./utils/render.js";
+import {render, replace, RENDER_POSITION} from "./utils/render.js";
 
 const EVENT_COUNT = 10;
 
@@ -26,25 +26,22 @@ const renderEvent = (tripEventListElement, event) => {
   };
 
   const replaceEditToEvent = () => {
-    tripEventListElement.replaceChild(eventComponent.getElement(), editComponent.getElement());
+    replace(eventComponent, editComponent);
   };
 
   const replaceEventToEdit = () => {
-    tripEventListElement.replaceChild(editComponent.getElement(), eventComponent.getElement());
+    replace(editComponent, eventComponent);
   };
 
   const eventComponent = new EventComponent(event);
-  const rollupButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-  rollupButton.addEventListener(`click`, () => {
+  eventComponent.setRollupButtonHandler(() => {
     replaceEventToEdit();
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   const editComponent = new EventEditComponent(event);
-  const saveEventButton = editComponent.getElement().querySelector(`.event__save-btn`);
-  const resetEventButton = editComponent.getElement().querySelector(`.event__reset-btn`);
-  saveEventButton.addEventListener(`click`, replaceEditToEvent);
-  resetEventButton.addEventListener(`click`, replaceEditToEvent);
+  editComponent.setSaveButtonHandler(replaceEditToEvent);
+  editComponent.setResetButtonHandler(replaceEditToEvent);
 
   render(tripEventListElement, eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
 };
