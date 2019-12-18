@@ -1,5 +1,6 @@
-import {formatDate, createElement} from "../utils.js";
+import {formatDate} from "../utils.js";
 import {MONTH_NAMES} from "../const.js";
+import {AbstractComponent} from "./abstract-component.js";
 
 const createTripDayItemTemplate = (dayInMilliseconds, counter) => {
   const date = new Date(dayInMilliseconds);
@@ -13,26 +14,14 @@ const createTripDayItemTemplate = (dayInMilliseconds, counter) => {
       </li>
   `);
 };
-export default class DayItem {
+export default class DayItem extends AbstractComponent {
   constructor(date, counter) {
+    super();
     this._date = date;
     this._counter = counter;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripDayItemTemplate(this._date.getTime(), this._counter);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

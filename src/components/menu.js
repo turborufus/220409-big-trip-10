@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import {AbstractComponent} from "./abstract-component.js";
 
 const createMenuTabMarkup = (tabName, isActive) => {
   return (`<a class="trip-tabs__btn  ${isActive ? `trip-tabs__btn--active` : ``}" href="#">${tabName}</a>
@@ -13,25 +13,14 @@ const createTripMenuTemplate = (menuTabs) => {
   `);
 };
 
-export default class SiteMenu {
+export default class SiteMenu extends AbstractComponent {
 
   constructor(menuTabs) {
+    super();
     this._menuTabs = menuTabs;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripMenuTemplate(this._menuTabs);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

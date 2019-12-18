@@ -1,6 +1,7 @@
 import {generateOffers} from "../mock/offer.js";
 import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
-import {formatTime, createElement} from "../utils.js";
+import {formatTime} from "../utils.js";
+import {AbstractComponent} from "./abstract-component.js";
 
 const createEventTypeItemMarkup = (type, isChecked) => {
   return (`
@@ -154,25 +155,13 @@ const createTripEventEditTemplate = (event) => {
   `);
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractComponent {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventEditTemplate(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
