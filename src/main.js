@@ -11,7 +11,7 @@ import {generateMenuTabs} from "./mock/menuTab.js";
 import {generateFilters} from "./mock/filter.js";
 import {generateEvents} from "./mock/event.js";
 import {generateTripDays} from "./mock/trip-day.js";
-import {render, RENDER_POSITION} from "./utils.js";
+import {render, RENDER_POSITION} from "./utils/render.js";
 
 const EVENT_COUNT = 10;
 

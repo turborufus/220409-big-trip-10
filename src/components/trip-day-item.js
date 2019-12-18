@@ -1,4 +1,4 @@
-import {formatDate} from "../utils.js";
+import {formatDate} from "../utils/datetime.js";
 import {MONTH_NAMES} from "../const.js";
 import AbstractComponent from "./abstract-component.js";
 
