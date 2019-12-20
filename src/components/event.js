@@ -1,5 +1,6 @@
 import {TYPE_PLACEHOLDER} from "../const.js";
-import {formatDate, formatTime, calculateDuration, createElement} from "../utils.js";
+import {formatDate, formatTime, calculateDuration} from "../utils/datetime.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createScheduleMarkup = (start, stop) => {
   const startDate = formatDate(start);
@@ -61,25 +62,18 @@ const createTripEventItemTemplate = (event) => {
   `);
 };
 
-export default class Event {
+export default class Event extends AbstractComponent {
   constructor(event) {
+    super();
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEventItemTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setRollupButtonHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 }

@@ -1,22 +1,8 @@
-import {MS} from "./const.js";
+import {MS} from "../const.js";
 
 export const DAYS_THROUGH = {
   AGO: `ago`,
   AFTER: `after`
-};
-
-export const RENDER_POSITION = {
-  BEFOREEND: `beforeend`,
-  AFTERBEGIN: `afterbegin`,
-};
-
-export const getRandomArrayItem = (array) => {
-  const randomIndex = getRandomIntegerNumber(0, array.length - 1);
-  return array[randomIndex];
-};
-
-export const getRandomIntegerNumber = (min, max) => {
-  return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
 export const getRandomDate = (startDate, endDate) => {
@@ -78,20 +64,3 @@ export const formatTime = (date) => {
   return `${hour}:${minute}`;
 };
 
-export const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};
-
-export const render = (container, element, place) => {
-  switch (place) {
-    case RENDER_POSITION.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RENDER_POSITION.BEFOREEND:
-      container.append(element);
-      break;
-  }
-};

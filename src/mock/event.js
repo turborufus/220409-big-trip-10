@@ -1,4 +1,5 @@
-import {getRandomArrayItem, getRandomIntegerNumber, getDateDaysThrough, getRandomDate, DAYS_THROUGH} from "../utils.js";
+import {getRandomArrayItem, getRandomIntegerNumber} from "../utils/common.js";
+import {getDateDaysThrough, getRandomDate, DAYS_THROUGH} from "../utils/datetime.js";
 import {generateOffers} from "./offer.js";
 import {generateDestination} from "./destination.js";
 import {DESTINATIONS, TRANSER_TYPES, ACTIVITY_TYPES} from "../const.js";

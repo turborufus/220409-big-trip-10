@@ -1,5 +1,5 @@
 import {MONTH_NAMES} from "../const.js";
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createInfoDatesString = (start, stop) => {
   if (start.getMonth() === stop.getMonth()) {
@@ -40,25 +40,14 @@ const createTripInfoTemplate = (events) => {
   `);
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(events) {
+    super();
     this._events = events;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._events);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
 }
