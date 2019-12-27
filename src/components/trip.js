@@ -13,9 +13,8 @@ export default class TripController {
 
   render(events) {
     const container = this._container;
-    const isEmptyEventList = events.length === 0;
 
-    if (isEmptyEventList) {
+    if (!events.length) {
       render(container, this._noEventsComponent.getElement(), RENDER_POSITION.BEFOREEND);
     } else {
       const tripDayListElement = this._dayListComponent.getElement();
