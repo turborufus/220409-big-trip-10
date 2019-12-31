@@ -1,42 +1,47 @@
 import AbstractComponent from "./abstract-component";
 
 export const SORT_TYPE = {
-  EVENT: `sort-event`,
-  TIME: `sort-time`,
-  PRICE: `sort-price`
+  EVENT: {
+    id: `sort-event`,
+    name: `Event`,
+  },
+  TIME: {
+    id: `sort-time`,
+    name: `Time`,
+  },
+  PRICE: {
+    id: `sort-price`,
+    name: `Price`,
+  }
 };
 
-const createSortTemplate = () => {
+const createSortItemMarkup = (sortType, isChecked) => {
+  const sortId = `sort-${sortType}`;
+  return (`<div class="trip-sort__item  trip-sort__item--event">
+    <input id="${sortId}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${sortId}" ${isChecked ? `checked` : ``}>
+    <label class="trip-sort__btn" for="${sortId}">${sortType}</label>
+  </div>`);
+};
+
+const createSortTemplate = (sortTypeList) => {
+  const sortItemsMarkup = sortTypeList.map((it, i) => createSortItemMarkup(it, i === 0)).join(`\n`);
+
   return (`<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <span class="trip-sort__item  trip-sort__item--day"></span>
-
-    <div class="trip-sort__item  trip-sort__item--event">
-        <input id="${SORT_TYPE.EVENT}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${SORT_TYPE.EVENT}">
-        <label class="trip-sort__btn" for="${SORT_TYPE.EVENT}">Event</label>
-    </div>
-
-    <div class="trip-sort__item  trip-sort__item--time">
-        <input id="${SORT_TYPE.TIME}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${SORT_TYPE.TIME}" checked="">
-        <label class="trip-sort__btn  trip-sort__btn--active  trip-sort__btn--by-increase" for="${SORT_TYPE.TIME}">
-        Time
-        </label>
-    </div>
-
-    <div class="trip-sort__item  trip-sort__item--price">
-        <input id="${SORT_TYPE.PRICE}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${SORT_TYPE.PRICE}">
-        <label class="trip-sort__btn" for="${SORT_TYPE.PRICE}">
-        Price
-        </label>
-    </div>
-
+    ${sortItemsMarkup}
     <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>
   `);
 };
 
 export default class Sort extends AbstractComponent {
+  constructor(sortTypeList) {
+    super();
+    this._sortTypeList = sortTypeList;
+  }
+
   getTemplate() {
-    return createSortTemplate();
+    return createSortTemplate(this._sortTypeList);
   }
 
 }
