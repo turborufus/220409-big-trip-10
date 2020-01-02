@@ -1,19 +1,12 @@
 import AbstractComponent from "./abstract-component";
 
 export const SORT_TYPE = {
-  EVENT: {
-    id: `sort-event`,
-    name: `Event`,
-  },
-  TIME: {
-    id: `sort-time`,
-    name: `Time`,
-  },
-  PRICE: {
-    id: `sort-price`,
-    name: `Price`,
-  }
+  EVENT: `event`,
+  TIME: `time`,
+  PRICE: `price`
 };
+
+const sortTypeList = [SORT_TYPE.EVENT, SORT_TYPE.TIME, SORT_TYPE.PRICE];
 
 const createSortItemMarkup = (sortType, isChecked) => {
   const sortId = `sort-${sortType}`;
@@ -23,8 +16,8 @@ const createSortItemMarkup = (sortType, isChecked) => {
   </div>`);
 };
 
-const createSortTemplate = (sortTypeList) => {
-  const sortItemsMarkup = sortTypeList.map((it, i) => createSortItemMarkup(it, i === 0)).join(`\n`);
+const createSortTemplate = (currentSortType) => {
+  const sortItemsMarkup = sortTypeList.map((it) => createSortItemMarkup(it, it === currentSortType)).join(`\n`);
 
   return (`<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <span class="trip-sort__item  trip-sort__item--day"></span>
@@ -35,13 +28,37 @@ const createSortTemplate = (sortTypeList) => {
 };
 
 export default class Sort extends AbstractComponent {
-  constructor(sortTypeList) {
+  constructor() {
     super();
-    this._sortTypeList = sortTypeList;
+    this._currentSortType = SORT_TYPE.EVENT;
   }
 
   getTemplate() {
-    return createSortTemplate(this._sortTypeList);
+    return createSortTemplate(this._currentSortType);
+  }
+
+  get currentSortType() {
+    return this._currentSortType;
+  }
+
+  setSortTypeChangeHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+
+      if (evt.target.tagName !== `LABEL`) {
+        return;
+      }
+
+      const sortType = evt.target.innerHTML;
+
+      if (this._currentSortType === sortType) {
+        return;
+      }
+
+      this._currentSortType = sortType;
+
+      handler(this._currentSortType);
+    });
   }
 
 }
