@@ -7,7 +7,7 @@ import NoEventsComponent from "./no-events.js";
 import SortComponent from "./sort.js";
 import {SORT_TYPE} from "./sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
-import {render, replace, RENDER_POSITION} from "../utils/render.js";
+import {render, remove, replace, RENDER_POSITION} from "../utils/render.js";
 
 
 const renderEvent = (container, event) => {
@@ -101,6 +101,9 @@ export default class TripController {
         case SORT_TYPE.PRICE:
           sortedEvents = events.slice().sort((a, b) => a.price - b.price);
       }
+
+      this._dayListComponent.getElement().innerHTML = ``;
+      remove(this._sortComponent);
 
       this.render(sortedEvents);
     });
