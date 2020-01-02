@@ -166,18 +166,16 @@ export default class EventEdit extends AbstractComponent {
   }
 
   setSaveButtonHandler(handler) {
-    this.getElement().querySelector(`.event__save-btn`)
-      .addEventListener(`submit`, (evt) => {
-        evt.preventDefault();
-        handler();
-      });
+    this.getElement().addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      handler();
+    });
   }
 
   setResetButtonHandler(handler) {
-    this.getElement().querySelector(`.event__reset-btn`)
-      .addEventListener(`reset`, (evt) => {
-        evt.preventDefault();
-        handler();
-      });
+    this.getElement().addEventListener(`reset`, (evt) => {
+      evt.preventDefault();
+      handler();
+    });
   }
 }
