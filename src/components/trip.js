@@ -95,11 +95,11 @@ export default class TripController {
           sortedEvents = events.slice().sort((a, b) => {
             const aDur = a.stop.getTime() - a.start.getTime();
             const bDur = b.stop.getTime() - b.start.getTime();
-            return aDur - bDur;
+            return bDur - aDur;
           });
           break;
         case SORT_TYPE.PRICE:
-          sortedEvents = events.slice().sort((a, b) => a.price - b.price);
+          sortedEvents = events.slice().sort((a, b) => b.price - a.price);
       }
 
       this._dayListComponent.getElement().innerHTML = ``;
