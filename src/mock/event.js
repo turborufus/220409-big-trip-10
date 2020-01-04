@@ -19,7 +19,8 @@ const generateEvent = () => {
     start: startDate,
     stop: stopDate,
     price: getRandomIntegerNumber(1, 15) * 10,
-    offers: new Set(selectedOffers)
+    offers: new Set(selectedOffers),
+    isFavorite: Math.random() > 0.5
   };
 };
 
