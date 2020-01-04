@@ -1,45 +1,13 @@
 import DayItemComponent from "./trip-day-item.js";
 import DayListComponent from "./trip-days.js";
-import EventComponent from "./event.js";
-import EventEditComponent from "./event-edit.js";
 import EventListComponent from "./events-list.js";
 import NoEventsComponent from "./no-events.js";
+import PointController from "./point.js";
 import SortComponent from "./sort.js";
 import {SORT_TYPE} from "./sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
-import {render, remove, replace, RENDER_POSITION} from "../utils/render.js";
+import {render, remove, RENDER_POSITION} from "../utils/render.js";
 
-
-const renderEvent = (container, event) => {
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToEvent();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  const replaceEditToEvent = () => {
-    replace(eventComponent, editComponent);
-  };
-
-  const replaceEventToEdit = () => {
-    replace(editComponent, eventComponent);
-  };
-
-  const eventComponent = new EventComponent(event);
-  eventComponent.setRollupButtonHandler(() => {
-    replaceEventToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  const editComponent = new EventEditComponent(event);
-  editComponent.setSaveButtonHandler(replaceEditToEvent);
-  editComponent.setResetButtonHandler(replaceEditToEvent);
-
-  render(container, eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
-};
 export default class TripController {
   constructor(container) {
     this._container = container;
@@ -73,14 +41,14 @@ export default class TripController {
                 && event.start.getMonth() === dayItemComponent.date.getMonth()
                 && event.start.getFullYear() === dayItemComponent.date.getFullYear());
           })
-          .map((event) => renderEvent(tripEventListComponent.getElement(), event));
+          .forEach((event) => new PointController(tripEventListComponent.getElement()).render(event));
         });
       } else {
         const dayItemComponent = new DayItemComponent(null, 0);
         const tripEventListComponent = new EventListComponent();
         render(dayItemComponent.getElement(), tripEventListComponent.getElement(), RENDER_POSITION.BEFOREEND);
         render(tripDayListElement, dayItemComponent.getElement(), RENDER_POSITION.BEFOREEND);
-        events.map((event) => renderEvent(tripEventListComponent.getElement(), event));
+        events.forEach((event) => new PointController(tripEventListComponent.getElement()).render(event));
       }
     }
 
