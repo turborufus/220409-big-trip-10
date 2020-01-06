@@ -1,10 +1,10 @@
-import DayItemComponent from "./trip-day-item.js";
-import DayListComponent from "./trip-days.js";
-import EventListComponent from "./events-list.js";
-import NoEventsComponent from "./no-events.js";
+import DayItemComponent from "../components/trip-day-item.js";
+import DayListComponent from "../components/trip-days.js";
+import EventListComponent from "../components/events-list.js";
+import NoEventsComponent from "../components/no-events.js";
 import PointController from "./point.js";
-import SortComponent from "./sort.js";
-import {SORT_TYPE} from "./sort.js";
+import SortComponent from "../components/sort.js";
+import {SORT_TYPE} from "../components/sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
 import {render, remove, RENDER_POSITION} from "../utils/render.js";
 

@@ -1,5 +1,5 @@
-import EventComponent from "./event.js";
-import EventEditComponent from "./event-edit.js";
+import EventComponent from "../components/event.js";
+import EventEditComponent from "../components/event-edit.js";
 import {render, replace, RENDER_POSITION} from "../utils/render.js";
 
 const MODE = {
