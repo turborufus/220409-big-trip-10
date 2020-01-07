@@ -1,7 +1,6 @@
 import {getRandomArrayItem, getRandomIntegerNumber} from "../utils/common.js";
 import {getDateDaysThrough, getRandomDate, DAYS_THROUGH} from "../utils/datetime.js";
 import {generateOffers} from "./offer.js";
-import {generateDestination} from "./destination.js";
 import {DESTINATIONS, TRANSER_TYPES, ACTIVITY_TYPES} from "../const.js";
 
 const generateEvent = () => {
@@ -11,15 +10,16 @@ const generateEvent = () => {
   const stopDate = getRandomDate(startDate, getDateDaysThrough(daysAfter, DAYS_THROUGH.AFTER));
   const types = TRANSER_TYPES.concat(ACTIVITY_TYPES);
   const type = getRandomArrayItem(types);
-  const selectedOffers = generateOffers().filter(() => Math.random() > 0.5).slice(0, 2);
+  const selectedOffers = generateOffers(type).filter(() => Math.random() > 0.5).slice(0, 2);
 
   return {
     type,
-    destination: generateDestination(getRandomArrayItem(DESTINATIONS)),
+    destination: getRandomArrayItem(DESTINATIONS),
     start: startDate,
     stop: stopDate,
     price: getRandomIntegerNumber(1, 15) * 10,
-    offers: new Set(selectedOffers)
+    offers: new Set(selectedOffers),
+    isFavorite: Math.random() > 0.5
   };
 };
 
