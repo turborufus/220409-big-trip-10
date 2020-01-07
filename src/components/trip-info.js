@@ -16,7 +16,7 @@ const createTripInfoTemplate = (events) => {
   let infoDates = ``;
   if (events.length > 0) {
     const destinations = events.map((event) => {
-      return event.destination.name;
+      return event.destination;
     });
 
     if (destinations.length > 3) {

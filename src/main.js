@@ -23,7 +23,7 @@ render(tripInfoMainElement, new TripInfoComponent(events).getElement(), RENDER_P
 
 const tripCost = !events.length ? 0 : events.map((event) => {
   const offers = Array.from(event.offers);
-  const offersPrice = offers.map((offer) => offer.price).reduce((price, it) => {
+  const offersPrice = !offers.length ? 0 : offers.map((offer) => offer.price).reduce((price, it) => {
     return price + it;
   });
   return event.price + offersPrice;
