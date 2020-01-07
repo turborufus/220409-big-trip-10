@@ -21,8 +21,8 @@ export default class PointController {
   }
 
   render(tripEvent) {
-    // const oldEventComponent = this._eventComponent;
-    // const oldEditComponent = this._editComponent;
+    const oldEventComponent = this._eventComponent;
+    const oldEditComponent = this._editComponent;
 
     this._eventComponent = new EventComponent(tripEvent);
     this._editComponent = new EventEditComponent(tripEvent);
@@ -32,13 +32,32 @@ export default class PointController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._editComponent.setSaveButtonHandler(this._replaceEditToEvent);
-    this._editComponent.setResetButtonHandler(this._replaceEditToEvent);
+    this._editComponent.setSaveButtonHandler((evt) => {
+      evt.preventDefault();
+      this._replaceEditToEvent();
+    });
+    this._editComponent.setResetButtonHandler((evt) => {
+      evt.preventDefault();
+      this._replaceEditToEvent();
+    });
 
-    render(this._container, this._eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
+    this._editComponent.setFavoriteButtonHandler(() => {
+      this._onDataChange(this, tripEvent, Object.assign({}, tripEvent, {
+        isFavorite: !tripEvent.isFavorite,
+      }));
+    });
+
+    if (oldEditComponent && oldEventComponent) {
+      replace(this._eventComponent, oldEventComponent);
+      replace(this._editComponent, oldEditComponent);
+    } else {
+      render(this._container, this._eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
+    }
   }
 
   _replaceEditToEvent() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+
     replace(this._eventComponent, this._editComponent);
     this._mode = MODE.DEFAULT;
   }
