@@ -1,7 +1,8 @@
 import {generateOffers} from "../mock/offer.js";
+import {generateDestination} from "../mock/destination.js";
 import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
 import {formatTime} from "../utils/datetime.js";
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
 
 const createEventTypeItemMarkup = (type, isChecked) => {
   return (`
@@ -71,27 +72,66 @@ const createPhotosMarkup = (photoURLs) => {
     });
 };
 
-const createTripEventEditTemplate = (event) => {
-  const {type, destination, start, stop, price, offers: selectedOffers, isFavorite} = event;
-  const {name: destName, description, imgURLs} = destination;
-  const availableOffers = generateOffers();
-  const transferTypesGroupMarkup = TRANSER_TYPES.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
-  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it) => createEventTypeItemMarkup(it, it === type)).join(`\n`);
-  const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
-  const timeMarkup = createTimeMarkup(start, stop);
-  const priceMarkup = createPriceMarkup(price);
-  const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(selectedOffers)
+const createEventDetailsMarkup = (event, availableOffers, destinationInfo) => {
+  const hasDestination = !!destinationInfo;
+  if (hasDestination) {
+    const {description, imgURLs} = destinationInfo;
+    const photosMarkup = createPhotosMarkup(imgURLs).join(`\n`);
+
+    const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(event.offers)
     .map((it) => {
       return it.name;
     }).includes(offer.name))).join(`\n`);
-  const photosMarkup = createPhotosMarkup(imgURLs).join(`\n`);
+
+    return (`
+      <section class="event__details">
+        <section class="event__section  event__section--offers">
+          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+          <div class="event__available-offers">
+            ${offersMarkup}
+          </div>
+        </section>
+
+        <section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${description}</p>
+
+          <div class="event__photos-container">
+              <div class="event__photos-tape">
+              ${photosMarkup}
+              </div>
+          </div>
+        </section>
+      </section>
+    `);
+
+  } else {
+    return (``);
+  }
+};
+
+const createTripEventEditTemplate = (event, eventType, availableOffers, destinationInfo) => {
+  const {type, start, stop, price, isFavorite} = event;
+  const currentType = (eventType !== type) ? eventType : type;
+
+  const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
+  const destName = destinationInfo ? destinationInfo.name : ``;
+
+  const transferTypesGroupMarkup = TRANSER_TYPES.map((it) => createEventTypeItemMarkup(it, it === currentType)).join(`\n`);
+  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it) => createEventTypeItemMarkup(it, it === currentType)).join(`\n`);
+
+  const timeMarkup = createTimeMarkup(start, stop);
+  const priceMarkup = createPriceMarkup(price);
+
+  const eventDetailsMarkup = createEventDetailsMarkup(event, availableOffers, destinationInfo);
 
   return (`<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${currentType}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -110,7 +150,7 @@ const createTripEventEditTemplate = (event) => {
 
         <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-            ${TYPE_PLACEHOLDER[type]}
+            ${TYPE_PLACEHOLDER[currentType]}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destName}" list="destination-list-1">
         <datalist id="destination-list-1">
@@ -140,52 +180,72 @@ const createTripEventEditTemplate = (event) => {
         </button>
       </header>
 
-      <section class="event__details">
+      ${eventDetailsMarkup}
 
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${offersMarkup}
-          </div>
-        </section>
-
-        <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>
-
-        <div class="event__photos-container">
-            <div class="event__photos-tape">
-            ${photosMarkup}
-            </div>
-        </div>
-        </section>
-      </section>
     </form>
   `);
 };
 
-export default class EventEdit extends AbstractComponent {
-  constructor(event) {
+export default class EventEdit extends AbstractSmartComponent {
+  constructor(tripEvent) {
     super();
-    this._event = event;
+    this._event = tripEvent;
+
+    this._eventType = this._event.type;
+    this._eventTypeOffers = generateOffers(this._eventType);
+    this._destinationInfo = generateDestination(this._event.destination);
+
+    this._submitHandler = null;
+    this._favoriteButtonHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createTripEventEditTemplate(this._event);
+    return createTripEventEditTemplate(this._event, this._eventType, this._eventTypeOffers, this._destinationInfo);
   }
 
   setSaveButtonHandler(handler) {
-    this.getElement().addEventListener(`submit`, (evt) => {
-      evt.preventDefault();
-      handler();
-    });
+    this.getElement().addEventListener(`submit`, handler);
+    this._submitHandler = handler;
   }
 
   setResetButtonHandler(handler) {
-    this.getElement().addEventListener(`reset`, (evt) => {
-      evt.preventDefault();
-      handler();
-    });
+    this.getElement().addEventListener(`reset`, handler);
+  }
+
+  setFavoriteButtonHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, handler);
+    this._favoriteButtonHandler = handler;
+  }
+
+  recoveryListeners() {
+    this.setFavoriteButtonHandler(this._favoriteButtonHandler);
+    this.setSaveButtonHandler(this._submitHandler);
+    this.setResetButtonHandler(this._submitHandler);
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    const elementTypes = element.querySelectorAll(`.event__type-input`);
+    elementTypes.forEach((eventType) => eventType.addEventListener(`change`, (evt) => {
+      if (evt.target.value !== this._eventType) {
+        this._eventType = evt.target.value;
+        this._eventTypeOffers = generateOffers(this._eventType);
+      }
+      this.rerender();
+    }));
+
+    element.querySelector(`.event__input--destination`)
+      .addEventListener(`change`, (evt) => {
+        const destName = evt.target.value;
+        if (this._destinationInfo === null || destName !== this._destinationInfo.name) {
+          this._destinationInfo = destName.length > 0 ? generateDestination(destName) : null;
+        }
+        this.rerender();
+      });
   }
 }
