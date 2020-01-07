@@ -8,9 +8,10 @@ const MODE = {
 };
 
 export default class PointController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
 
     this._eventComponent = null;
     this._editComponent = null;
@@ -55,6 +56,12 @@ export default class PointController {
     }
   }
 
+  setDefaultView() {
+    if (this._mode !== MODE.DEFAULT) {
+      this._replaceEditToEvent();
+    }
+  }
+
   _replaceEditToEvent() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
 
@@ -63,6 +70,8 @@ export default class PointController {
   }
 
   _replaceEventToEdit() {
+    this._onViewChange();
+
     replace(this._editComponent, this._eventComponent);
     this._mode = MODE.EDIT;
   }
