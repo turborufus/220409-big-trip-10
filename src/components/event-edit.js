@@ -1,3 +1,6 @@
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 import {generateOffers} from "../mock/offer.js";
 import {generateDestination} from "../mock/destination.js";
 import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
@@ -198,11 +201,21 @@ export default class EventEdit extends AbstractSmartComponent {
     this._submitHandler = null;
     this._favoriteButtonHandler = null;
 
+    this._startFatpickr = null;
+    this._endFlatpickr = null;
+
     this._subscribeOnEvents();
+    this._applyFlatpickr();
   }
 
   getTemplate() {
     return createTripEventEditTemplate(this._event, this._eventType, this._eventTypeOffers, this._destinationInfo);
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
   }
 
   setSaveButtonHandler(handler) {
@@ -248,4 +261,37 @@ export default class EventEdit extends AbstractSmartComponent {
         this.rerender();
       });
   }
+
+  _applyFlatpickr() {
+    if (this._startFatpickr) {
+      this._startFatpickr.destroy();
+      this._startFatpickr = null;
+    }
+
+    if (this._endFlatpickr) {
+      this._endFlatpickr.destroy();
+      this._endFlatpickr = null;
+    }
+
+    const startDateElement = this.getElement().querySelector(`input[name="event-start-time"]`);
+    this._startFatpickr = this._initFlatpickr(startDateElement, this._event.start);
+
+    const endDateElement = this.getElement().querySelector(`input[name="event-end-time"]`);
+    this._endFlatpickr = this._initFlatpickr(endDateElement, this._event.stop);
+  }
+
+  _initFlatpickr(dateElement, date) {
+    return flatpickr(dateElement, {
+      altInput: true,
+      allowInput: true,
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
+      altFormat: `d/m/Y H:i`,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      defaultDate: date
+    });
+  }
+
+
 }
