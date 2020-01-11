@@ -4,8 +4,9 @@ import 'flatpickr/dist/themes/light.css';
 import {generateOffers} from "../mock/offer.js";
 import {generateDestination} from "../mock/destination.js";
 import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
-import {formatTime} from "../utils/datetime.js";
+import {formatDateTime} from "../utils/datetime.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
+
 
 const createEventTypeItemMarkup = (type, isChecked) => {
   return (`
@@ -26,7 +27,7 @@ const createDestinationListMarkup = (destinations) => {
 };
 
 const formatDateValue = (date) => {
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() % 1000 % 100} ${formatTime(date)}`;
+  return formatDateTime(date, `DD/MM/yy HH:mm`);
 };
 
 const createTimeMarkup = (start, stop) => {

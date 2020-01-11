@@ -15,10 +15,3 @@ export const ACTIVITY_TYPES = [`check-in`, `restaurant`, `sightseeing`];
 
 export const DESTINATIONS = [`Geneva`, `Amsterdam`, `Saint Petersburg`, `Moscow`, `Brugge`];
 
-export const MONTH_NAMES = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
-
-export const MS = {
-  IN_MINUTE: 60 * 1000,
-  IN_HOUR: 3600 * 1000,
-  IN_DAY: 24 * 3600 * 1000
-};

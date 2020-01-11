@@ -1,12 +1,14 @@
-import {MONTH_NAMES} from "../const.js";
 import AbstractComponent from "./abstract-component.js";
+import moment from "moment";
 
 const createInfoDatesString = (start, stop) => {
-  if (start.getMonth() === stop.getMonth()) {
-    return `${MONTH_NAMES[start.getMonth()].toUpperCase()} ${start.getDate()}&nbsp;&mdash;&nbsp;${stop.getDate()}`;
+  const momentStart = moment(start);
+  const momentStop = moment(stop);
+  if (momentStart.isSame(momentStop, `month`)) {
+    return `${momentStart.format(`MMM D`).toUpperCase()}&nbsp;&mdash;&nbsp;${momentStop.format(`D`)}`;
   } else {
-    const startDate = `${MONTH_NAMES[start.getMonth()].toUpperCase()} ${start.getDate()}`;
-    const stopDate = `${MONTH_NAMES[stop.getMonth()].toUpperCase()} ${stop.getDate()}`;
+    const startDate = momentStart.format(`MMM D`).toUpperCase();
+    const stopDate = momentStop.format(`MMM D`).toUpperCase();
     return `${startDate}&nbsp;&mdash;&nbsp;${stopDate}`;
   }
 };
