@@ -1,5 +1,4 @@
-import {formatDate} from "../utils/datetime.js";
-import {MONTH_NAMES} from "../const.js";
+import {formatDateTime} from "../utils/datetime.js";
 import AbstractComponent from "./abstract-component.js";
 import EventListComponent from "./events-list.js";
 
@@ -7,8 +6,8 @@ const createDayInfoMarkup = (dayInMilliseconds, counter) => {
   const isEmptyDay = dayInMilliseconds === 0;
   if (!isEmptyDay) {
     const date = new Date(dayInMilliseconds);
-    const dateValue = formatDate(date);
-    const dateTitle = `${MONTH_NAMES[date.getMonth()].toUpperCase()} ${date.getDate()}`;
+    const dateValue = formatDateTime(date, `DD-MM-YYYY`);
+    const dateTitle = formatDateTime(date, `MMM D`).toUpperCase();
 
     return (`<span class="day__counter">${counter}</span>
       <time class="day__date" datetime="${dateValue}">${dateTitle}</time>`);

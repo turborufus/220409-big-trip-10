@@ -7,6 +7,7 @@ import SortComponent from "../components/sort.js";
 import {SORT_TYPE} from "../components/sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
 import {render, remove, RENDER_POSITION} from "../utils/render.js";
+import moment from "moment";
 
 const renderEvents = (eventListElement, events, onDataChange, onViewChange) => {
   return events.map((tripEvent) => {
@@ -58,9 +59,7 @@ export default class TripController {
           render(dayItemComponent.getElement(), tripEventListComponent.getElement(), RENDER_POSITION.BEFOREEND);
 
           const dayEvents = this._events.filter((tripEvent) => {
-            return (tripEvent.start.getDate() === dayItemComponent.date.getDate()
-                && tripEvent.start.getMonth() === dayItemComponent.date.getMonth()
-                && tripEvent.start.getFullYear() === dayItemComponent.date.getFullYear());
+            return (moment(tripEvent.start).isSame(dayItemComponent.date, `day`));
           });
           const newPoints = renderEvents(tripEventListComponent.getElement(), dayEvents, this._onDataChange, this._onViewChange);
           this._pointControllers = this._pointControllers.concat(newPoints);

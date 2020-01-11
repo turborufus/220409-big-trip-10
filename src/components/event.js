@@ -1,19 +1,20 @@
 import {TYPE_PLACEHOLDER} from "../const.js";
-import {formatDate, formatTime, calculateDuration} from "../utils/datetime.js";
+import {formatDateTime, calculateDuration} from "../utils/datetime.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createScheduleMarkup = (start, stop) => {
-  const startDate = formatDate(start);
-  const stopDate = formatDate(stop);
-  const startTime = formatTime(start);
-  const stopTime = formatTime(stop);
+  const startDateTime = formatDateTime(start, `DD-MM-YYYYTHH:mm`);
+  const stopDateTime = formatDateTime(stop, `DD-MM-YYYYTHH:mm`);
+  const startTime = formatDateTime(start, `HH:mm`);
+  const stopTime = formatDateTime(stop, `HH:mm`);
   const duration = calculateDuration(start, stop);
+
   return (
     `<div class="event__schedule">
       <p class="event__time">
-      <time class="event__start-time" datetime="${startDate}T${startTime}">${startTime}</time>
+      <time class="event__start-time" datetime="${startDateTime}">${startTime}</time>
       &mdash;
-      <time class="event__end-time" datetime="${stopDate}T${stopTime}">${stopTime}</time>
+      <time class="event__end-time" datetime="${stopDateTime}">${stopTime}</time>
       </p>
       <p class="event__duration">${duration}</p>
     </div>`
