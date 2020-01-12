@@ -3,7 +3,7 @@ import {getDateDaysThrough, getRandomDate, DAYS_THROUGH} from "../utils/datetime
 import {generateOffers} from "./offer.js";
 import {DESTINATIONS, TRANSER_TYPES, ACTIVITY_TYPES} from "../const.js";
 
-const generateEvent = () => {
+const generatePoint = () => {
   const daysAgo = getRandomIntegerNumber(1, 10);
   const daysAfter = getRandomIntegerNumber(1, 10);
   const startDate = getRandomDate(getDateDaysThrough(daysAgo, DAYS_THROUGH.AGO), new Date());
@@ -23,10 +23,10 @@ const generateEvent = () => {
   };
 };
 
-const generateEvents = (count) => {
+const generatePoints = (count) => {
   return new Array(count)
     .fill(``)
-    .map(() => generateEvent());
+    .map(() => generatePoint());
 };
 
-export {generateEvent, generateEvents};
+export {generatePoint, generatePoints};

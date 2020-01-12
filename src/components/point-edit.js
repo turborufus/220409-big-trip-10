@@ -76,13 +76,13 @@ const createPhotosMarkup = (photoURLs) => {
     });
 };
 
-const createEventDetailsMarkup = (event, availableOffers, destinationInfo) => {
+const createPointDetailsMarkup = (point, availableOffers, destinationInfo) => {
   const hasDestination = !!destinationInfo;
   if (hasDestination) {
     const {description, imgURLs} = destinationInfo;
     const photosMarkup = createPhotosMarkup(imgURLs).join(`\n`);
 
-    const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(event.offers)
+    const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(point.offers)
     .map((it) => {
       return it.name;
     }).includes(offer.name))).join(`\n`);
@@ -115,8 +115,8 @@ const createEventDetailsMarkup = (event, availableOffers, destinationInfo) => {
   }
 };
 
-const createTripEventEditTemplate = (event, eventType, availableOffers, destinationInfo) => {
-  const {type, start, stop, price, isFavorite} = event;
+const createPointEditTemplate = (point, eventType, availableOffers, destinationInfo) => {
+  const {type, start, stop, price, isFavorite} = point;
   const currentType = (eventType !== type) ? eventType : type;
 
   const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
@@ -128,7 +128,7 @@ const createTripEventEditTemplate = (event, eventType, availableOffers, destinat
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
 
-  const eventDetailsMarkup = createEventDetailsMarkup(event, availableOffers, destinationInfo);
+  const pointDetailsMarkup = createPointDetailsMarkup(point, availableOffers, destinationInfo);
 
   return (`<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -184,20 +184,20 @@ const createTripEventEditTemplate = (event, eventType, availableOffers, destinat
         </button>
       </header>
 
-      ${eventDetailsMarkup}
+      ${pointDetailsMarkup}
 
     </form>
   `);
 };
 
-export default class EventEdit extends AbstractSmartComponent {
-  constructor(tripEvent) {
+export default class PointEdit extends AbstractSmartComponent {
+  constructor(point) {
     super();
-    this._event = tripEvent;
+    this._point = point;
 
-    this._eventType = this._event.type;
+    this._eventType = this._point.type;
     this._eventTypeOffers = generateOffers(this._eventType);
-    this._destinationInfo = generateDestination(this._event.destination);
+    this._destinationInfo = generateDestination(this._point.destination);
 
     this._submitHandler = null;
     this._favoriteButtonHandler = null;
@@ -210,7 +210,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTripEventEditTemplate(this._event, this._eventType, this._eventTypeOffers, this._destinationInfo);
+    return createPointEditTemplate(this._point, this._eventType, this._eventTypeOffers, this._destinationInfo);
   }
 
   rerender() {
@@ -275,10 +275,10 @@ export default class EventEdit extends AbstractSmartComponent {
     }
 
     const startDateElement = this.getElement().querySelector(`input[name="event-start-time"]`);
-    this._startFatpickr = this._initFlatpickr(startDateElement, this._event.start);
+    this._startFatpickr = this._initFlatpickr(startDateElement, this._point.start);
 
     const endDateElement = this.getElement().querySelector(`input[name="event-end-time"]`);
-    this._endFlatpickr = this._initFlatpickr(endDateElement, this._event.stop);
+    this._endFlatpickr = this._initFlatpickr(endDateElement, this._point.stop);
   }
 
   _initFlatpickr(dateElement, date) {

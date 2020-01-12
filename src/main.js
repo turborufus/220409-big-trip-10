@@ -4,7 +4,7 @@ import TripInfoComponent from "./components/trip-info.js";
 import TripController from "./controllers/trip.js";
 import {generateMenuTabs} from "./mock/menuTab.js";
 import {generateFilters} from "./mock/filter.js";
-import {generateEvents} from "./mock/event.js";
+import {generatePoints} from "./mock/point.js";
 import {render, RENDER_POSITION} from "./utils/render.js";
 
 
@@ -14,19 +14,19 @@ const compareDates = (dateA, dateB) => {
   return dateA.getTime() - dateB.getTime();
 };
 
-const events = generateEvents(EVENT_COUNT);
-events.sort((eventA, eventB) => compareDates(eventA.start, eventB.start));
+const points = generatePoints(EVENT_COUNT);
+points.sort((pointA, pointB) => compareDates(pointA.start, pointB.start));
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoMainElement = tripMainElement.querySelector(`.trip-info`);
-render(tripInfoMainElement, new TripInfoComponent(events).getElement(), RENDER_POSITION.AFTERBEGIN);
+render(tripInfoMainElement, new TripInfoComponent(points).getElement(), RENDER_POSITION.AFTERBEGIN);
 
-const tripCost = !events.length ? 0 : events.map((event) => {
-  const offers = Array.from(event.offers);
+const tripCost = !points.length ? 0 : points.map((point) => {
+  const offers = Array.from(point.offers);
   const offersPrice = !offers.length ? 0 : offers.map((offer) => offer.price).reduce((price, it) => {
     return price + it;
   });
-  return event.price + offersPrice;
+  return point.price + offersPrice;
 }).reduce((cost, price) => {
   return cost + price;
 });
@@ -49,5 +49,5 @@ render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_PO
 const tripEventsElement = document.querySelector(`.trip-events`);
 
 const tripController = new TripController(tripEventsElement);
-tripController.render(events);
+tripController.render(points);
 

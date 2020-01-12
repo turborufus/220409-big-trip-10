@@ -1,5 +1,5 @@
-import EventComponent from "../components/event.js";
-import EventEditComponent from "../components/event-edit.js";
+import PointComponent from "../components/point.js";
+import PointEditComponent from "../components/point-edit.js";
 import {render, replace, RENDER_POSITION} from "../utils/render.js";
 
 const MODE = {
@@ -13,7 +13,7 @@ export default class PointController {
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
 
-    this._eventComponent = null;
+    this._pointComponent = null;
     this._editComponent = null;
 
     this._mode = MODE.DEFAULT;
@@ -21,58 +21,58 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(tripEvent) {
-    const oldEventComponent = this._eventComponent;
+  render(point) {
+    const oldPointComponent = this._pointComponent;
     const oldEditComponent = this._editComponent;
 
-    this._eventComponent = new EventComponent(tripEvent);
-    this._editComponent = new EventEditComponent(tripEvent);
+    this._pointComponent = new PointComponent(point);
+    this._editComponent = new PointEditComponent(point);
 
-    this._eventComponent.setRollupButtonHandler(() => {
-      this._replaceEventToEdit();
+    this._pointComponent.setRollupButtonHandler(() => {
+      this._replacePointToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._editComponent.setSaveButtonHandler((evt) => {
       evt.preventDefault();
-      this._replaceEditToEvent();
+      this._replaceEditToPoint();
     });
     this._editComponent.setResetButtonHandler((evt) => {
       evt.preventDefault();
-      this._replaceEditToEvent();
+      this._replaceEditToPoint();
     });
 
     this._editComponent.setFavoriteButtonHandler(() => {
-      this._onDataChange(this, tripEvent, Object.assign({}, tripEvent, {
-        isFavorite: !tripEvent.isFavorite,
+      this._onDataChange(this, point, Object.assign({}, point, {
+        isFavorite: !point.isFavorite,
       }));
     });
 
-    if (oldEditComponent && oldEventComponent) {
-      replace(this._eventComponent, oldEventComponent);
+    if (oldEditComponent && oldPointComponent) {
+      replace(this._pointComponent, oldPointComponent);
       replace(this._editComponent, oldEditComponent);
     } else {
-      render(this._container, this._eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
+      render(this._container, this._pointComponent.getElement(), RENDER_POSITION.BEFOREEND);
     }
   }
 
   setDefaultView() {
     if (this._mode !== MODE.DEFAULT) {
-      this._replaceEditToEvent();
+      this._replaceEditToPoint();
     }
   }
 
-  _replaceEditToEvent() {
+  _replaceEditToPoint() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
 
-    replace(this._eventComponent, this._editComponent);
+    replace(this._pointComponent, this._editComponent);
     this._mode = MODE.DEFAULT;
   }
 
-  _replaceEventToEdit() {
+  _replacePointToEdit() {
     this._onViewChange();
 
-    replace(this._editComponent, this._eventComponent);
+    replace(this._editComponent, this._pointComponent);
     this._mode = MODE.EDIT;
   }
 
@@ -80,7 +80,7 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      this._replaceEditToEvent();
+      this._replaceEditToPoint();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }

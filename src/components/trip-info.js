@@ -13,12 +13,12 @@ const createInfoDatesString = (start, stop) => {
   }
 };
 
-const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (points) => {
   let title = ``;
   let infoDates = ``;
-  if (events.length > 0) {
-    const destinations = events.map((event) => {
-      return event.destination;
+  if (points.length > 0) {
+    const destinations = points.map((point) => {
+      return point.destination;
     });
 
     if (destinations.length > 3) {
@@ -30,8 +30,8 @@ const createTripInfoTemplate = (events) => {
       });
     }
 
-    const startDate = events[0].start;
-    const stopDate = events[events.length - 1].stop;
+    const startDate = points[0].start;
+    const stopDate = points[points.length - 1].stop;
     infoDates = createInfoDatesString(startDate, stopDate);
   }
 
@@ -43,13 +43,13 @@ const createTripInfoTemplate = (events) => {
 };
 
 export default class TripInfo extends AbstractComponent {
-  constructor(events) {
+  constructor(points) {
     super();
-    this._events = events;
+    this._points = points;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._events);
+    return createTripInfoTemplate(this._points);
   }
 
 }

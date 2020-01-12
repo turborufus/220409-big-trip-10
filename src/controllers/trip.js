@@ -1,7 +1,7 @@
 import DayItemComponent from "../components/trip-day-item.js";
 import DayListComponent from "../components/trip-days.js";
-import EventListComponent from "../components/events-list.js";
-import NoEventsComponent from "../components/no-events.js";
+import PointListComponent from "../components/point-list.js";
+import NoPointsComponent from "../components/no-points.js";
 import PointController from "./point.js";
 import SortComponent from "../components/sort.js";
 import {SORT_TYPE} from "../components/sort.js";
@@ -9,21 +9,21 @@ import {generateTripDays} from "../mock/trip-day.js";
 import {render, remove, RENDER_POSITION} from "../utils/render.js";
 import moment from "moment";
 
-const renderEvents = (eventListElement, events, onDataChange, onViewChange) => {
-  return events.map((tripEvent) => {
-    const pointController = new PointController(eventListElement, onDataChange, onViewChange);
-    pointController.render(tripEvent);
+const renderPoints = (pointListElement, points, onDataChange, onViewChange) => {
+  return points.map((point) => {
+    const pointController = new PointController(pointListElement, onDataChange, onViewChange);
+    pointController.render(point);
     return pointController;
   });
 };
 
 export default class TripController {
   constructor(container) {
-    this._events = [];
+    this._points = [];
     this._pointControllers = [];
 
     this._container = container;
-    this._noEventsComponent = new NoEventsComponent();
+    this._noPointsComponent = new NoPointsComponent();
     this._dayListComponent = new DayListComponent();
     this._sortComponent = new SortComponent();
 
@@ -32,13 +32,13 @@ export default class TripController {
     this._onViewChange = this._onViewChange.bind(this);
   }
 
-  render(events) {
-    this._events = events;
+  render(points) {
+    this._points = points;
 
     const container = this._container;
 
-    if (!this._events.length) {
-      render(container, this._noEventsComponent.getElement(), RENDER_POSITION.BEFOREEND);
+    if (!this._points.length) {
+      render(container, this._noPointsComponent.getElement(), RENDER_POSITION.BEFOREEND);
     } else {
       render(container, this._sortComponent.getElement(), RENDER_POSITION.BEFOREEND);
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
@@ -47,65 +47,65 @@ export default class TripController {
       render(container, tripDayListElement, RENDER_POSITION.BEFOREEND);
 
       if (this._sortComponent.currentSortType === SORT_TYPE.EVENT) {
-        const tripDays = generateTripDays(this._events.map((tripEvent) => {
-          return tripEvent.start;
+        const tripDays = generateTripDays(this._points.map((point) => {
+          return point.start;
         }));
 
         Array.from(tripDays).sort().forEach((dayInMilliseconds, i) => {
           const dayItemComponent = new DayItemComponent(new Date(dayInMilliseconds), i + 1);
           render(tripDayListElement, dayItemComponent.getElement(), RENDER_POSITION.BEFOREEND);
 
-          const tripEventListComponent = new EventListComponent();
-          render(dayItemComponent.getElement(), tripEventListComponent.getElement(), RENDER_POSITION.BEFOREEND);
+          const pointListComponent = new PointListComponent();
+          render(dayItemComponent.getElement(), pointListComponent.getElement(), RENDER_POSITION.BEFOREEND);
 
-          const dayEvents = this._events.filter((tripEvent) => {
-            return (moment(tripEvent.start).isSame(dayItemComponent.date, `day`));
+          const dayPoints = this._points.filter((point) => {
+            return (moment(point.start).isSame(dayItemComponent.date, `day`));
           });
-          const newPoints = renderEvents(tripEventListComponent.getElement(), dayEvents, this._onDataChange, this._onViewChange);
+          const newPoints = renderPoints(pointListComponent.getElement(), dayPoints, this._onDataChange, this._onViewChange);
           this._pointControllers = this._pointControllers.concat(newPoints);
         });
       } else {
         const dayItemComponent = new DayItemComponent(null, 0);
-        const tripEventListComponent = new EventListComponent();
-        render(dayItemComponent.getElement(), tripEventListComponent.getElement(), RENDER_POSITION.BEFOREEND);
+        const pointListComponent = new PointListComponent();
+        render(dayItemComponent.getElement(), pointListComponent.getElement(), RENDER_POSITION.BEFOREEND);
         render(tripDayListElement, dayItemComponent.getElement(), RENDER_POSITION.BEFOREEND);
-        this._pointControllers = renderEvents(tripEventListComponent.getElement(), this._events, this._onDataChange, this._onViewChange);
+        this._pointControllers = renderPoints(pointListComponent.getElement(), this._points, this._onDataChange, this._onViewChange);
       }
     }
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const index = this._events.findIndex((it) => it === oldData);
+    const index = this._points.findIndex((it) => it === oldData);
 
     if (index === -1) {
       return;
     }
 
-    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+    this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
 
-    pointController.render(this._events[index]);
+    pointController.render(this._points[index]);
   }
 
   _onSortTypeChange(sortType) {
-    let sortedEvents = [];
+    let sortedPoints = [];
     switch (sortType) {
       case SORT_TYPE.EVENT:
-        sortedEvents = this._events;
+        sortedPoints = this._points;
         break;
       case SORT_TYPE.TIME:
-        sortedEvents = this._events.slice().sort((a, b) => {
+        sortedPoints = this._points.slice().sort((a, b) => {
           const aDur = a.stop.getTime() - a.start.getTime();
           const bDur = b.stop.getTime() - b.start.getTime();
           return bDur - aDur;
         });
         break;
       case SORT_TYPE.PRICE:
-        sortedEvents = this._events.slice().sort((a, b) => b.price - a.price);
+        sortedPoints = this._points.slice().sort((a, b) => b.price - a.price);
     }
     this._dayListComponent.getElement().innerHTML = ``;
     remove(this._sortComponent);
 
-    this.render(sortedEvents);
+    this.render(sortedPoints);
   }
 
   _onViewChange() {
