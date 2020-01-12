@@ -2,6 +2,7 @@ import FilterComponent from "./components/filter.js";
 import SiteMenuComponent from "./components/menu.js";
 import TripInfoComponent from "./components/trip-info.js";
 import TripController from "./controllers/trip.js";
+import PointsModel from "./models/points.js";
 import {generateMenuTabs} from "./mock/menuTab.js";
 import {generateFilters} from "./mock/filter.js";
 import {generatePoints} from "./mock/point.js";
@@ -16,6 +17,9 @@ const compareDates = (dateA, dateB) => {
 
 const points = generatePoints(EVENT_COUNT);
 points.sort((pointA, pointB) => compareDates(pointA.start, pointB.start));
+
+const pointsModel = new PointsModel();
+pointsModel.setPoints(points);
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoMainElement = tripMainElement.querySelector(`.trip-info`);
@@ -48,6 +52,6 @@ render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_PO
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-const tripController = new TripController(tripEventsElement);
-tripController.render(points);
+const tripController = new TripController(tripEventsElement, pointsModel);
+tripController.render();
 
