@@ -1,16 +1,17 @@
 import AbstractComponent from "./abstract-component.js";
-import moment from "moment";
+import {isSame, formatDateTime} from "../utils/datetime.js";
 
 const createInfoDatesString = (start, stop) => {
-  const momentStart = moment(start);
-  const momentStop = moment(stop);
-  if (momentStart.isSame(momentStop, `month`)) {
-    return `${momentStart.format(`MMM D`).toUpperCase()}&nbsp;&mdash;&nbsp;${momentStop.format(`D`)}`;
+  let startStr = ``;
+  let stopStr = ``;
+  if (isSame(start, stop, `month`)) {
+    startStr = formatDateTime(start, `MMM D`).toUpperCase();
+    stopStr = formatDateTime(stop, `D`);
   } else {
-    const startDate = momentStart.format(`MMM D`).toUpperCase();
-    const stopDate = momentStop.format(`MMM D`).toUpperCase();
-    return `${startDate}&nbsp;&mdash;&nbsp;${stopDate}`;
+    startStr = formatDateTime(start, `MMM D`).toUpperCase();
+    stopStr = formatDateTime(stop, `MMM D`).toUpperCase();
   }
+  return `${startStr}&nbsp;&mdash;&nbsp;${stopStr}`;
 };
 
 const createTripInfoTemplate = (points) => {

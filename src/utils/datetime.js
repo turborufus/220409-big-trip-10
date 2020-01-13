@@ -57,3 +57,13 @@ export const formatDateTime = (date, formatString) => {
   return moment(date).format(formatString);
 };
 
+export const isSame = (dateA, dateB, period) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  return a.isSame(b, period);
+};
+
+export const isDateAfter = (dateA, dateB) => {
+  return moment(dateA).isAfter(dateB, `day`);
+};
+

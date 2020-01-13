@@ -7,7 +7,7 @@ import SortComponent from "../components/sort.js";
 import {SORT_TYPE} from "../components/sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
 import {render, remove, RENDER_POSITION} from "../utils/render.js";
-import moment from "moment";
+import {isSame} from "../utils/datetime.js";
 
 const renderPoints = (pointListElement, points, onDataChange, onViewChange) => {
   return points.map((point) => {
@@ -58,7 +58,7 @@ export default class TripController {
           render(dayItemComponent.getElement(), pointListComponent.getElement(), RENDER_POSITION.BEFOREEND);
 
           const dayPoints = points.filter((point) => {
-            return (moment(point.start).isSame(dayItemComponent.date, `day`));
+            return (isSame(point.start, dayItemComponent.date, `day`));
           });
           const newPoints = renderPoints(pointListComponent.getElement(), dayPoints, this._onDataChange, this._onViewChange);
           this._pointControllers = this._pointControllers.concat(newPoints);
