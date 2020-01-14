@@ -1,12 +1,11 @@
-import FilterComponent from "./components/filter.js";
 import SiteMenuComponent from "./components/menu.js";
 import TripInfoComponent from "./components/trip-info.js";
 import TripController from "./controllers/trip.js";
 import PointsModel from "./models/points.js";
 import {generateMenuTabs} from "./mock/menuTab.js";
-import {generateFilters} from "./mock/filter.js";
 import {generatePoints} from "./mock/point.js";
 import {render, RENDER_POSITION} from "./utils/render.js";
+import FilterController from "./controllers/filter.js";
 
 
 const EVENT_COUNT = 10;
@@ -38,7 +37,6 @@ const tripCostElement = tripMainElement.querySelector(`.trip-info__cost-value`);
 tripCostElement.innerHTML = tripCost;
 
 const menuTabs = generateMenuTabs();
-const filters = generateFilters();
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const menuTitleElement = tripControlsElement.querySelector(`h2:nth-of-type(1)`);
 const filterTitleElement = tripControlsElement.querySelector(`h2:nth-of-type(2)`);
@@ -48,7 +46,9 @@ filterTitleElement.remove();
 render(tripControlsElement, menuTitleElement, RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, new SiteMenuComponent(menuTabs).getElement(), RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, filterTitleElement, RENDER_POSITION.BEFOREEND);
-render(tripControlsElement, new FilterComponent(filters).getElement(), RENDER_POSITION.BEFOREEND);
+
+const filterController = new FilterController(tripControlsElement, pointsModel);
+filterController.render();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 

@@ -1,7 +1,8 @@
-const Filters = [`everything`, `future`, `past`];
+import {FILTER_TYPE} from '../const.js';
 
 const generateFilters = () => {
-  return Filters;
+  const filters = [FILTER_TYPE.ALL, FILTER_TYPE.FUTURE, FILTER_TYPE.PAST];
+  return filters;
 };
 
 export {generateFilters};
