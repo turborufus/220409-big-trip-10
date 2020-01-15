@@ -67,3 +67,7 @@ export const isDateAfter = (dateA, dateB) => {
   return moment(dateA).isAfter(dateB, `day`);
 };
 
+export const compareDates = (dateA, dateB) => {
+  return dateA.getTime() - dateB.getTime();
+};
+

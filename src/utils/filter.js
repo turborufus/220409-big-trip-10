@@ -1,5 +1,5 @@
 import {FILTER_TYPE} from "../const.js";
-import {isDateAfter} from "./datetime.js";
+import {isDateAfter, compareDates} from "./datetime.js";
 
 export const getFuturePoints = (points, date) => {
   return points.filter((point) => isDateAfter(point.start, date));
@@ -14,7 +14,7 @@ export const getPointsByFilter = (points, filterType) => {
 
   switch (filterType) {
     case FILTER_TYPE.ALL:
-      return points;
+      return points.sort((pointA, pointB) => compareDates(pointA.start, pointB.start));
     case FILTER_TYPE.FUTURE:
       return getFuturePoints(points, nowDate);
     case FILTER_TYPE.PAST:

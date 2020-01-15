@@ -10,12 +10,7 @@ import FilterController from "./controllers/filter.js";
 
 const EVENT_COUNT = 10;
 
-const compareDates = (dateA, dateB) => {
-  return dateA.getTime() - dateB.getTime();
-};
-
 const points = generatePoints(EVENT_COUNT);
-points.sort((pointA, pointB) => compareDates(pointA.start, pointB.start));
 
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
