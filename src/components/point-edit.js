@@ -116,6 +116,7 @@ const createPointDetailsMarkup = (point, availableOffers, destinationInfo) => {
 };
 
 const createPointEditTemplate = (point, eventType, availableOffers, destinationInfo) => {
+  const isNewPoint = point === null;
   const {type, start, stop, price, isFavorite} = point;
   const currentType = (eventType !== type) ? eventType : type;
 
@@ -171,7 +172,7 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">${isNewPoint ? `Cancel` : `Delete`}</button>
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
@@ -200,6 +201,7 @@ export default class PointEdit extends AbstractSmartComponent {
     this._destinationInfo = generateDestination(this._point.destination);
 
     this._submitHandler = null;
+    this._rollupHandler = null;
     this._favoriteButtonHandler = null;
 
     this._startFatpickr = null;
@@ -228,6 +230,12 @@ export default class PointEdit extends AbstractSmartComponent {
     this.getElement().addEventListener(`reset`, handler);
   }
 
+  setRollupButtonHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
+    this._rollupHandler = handler;
+  }
+
   setFavoriteButtonHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, handler);
@@ -238,6 +246,7 @@ export default class PointEdit extends AbstractSmartComponent {
     this.setFavoriteButtonHandler(this._favoriteButtonHandler);
     this.setSaveButtonHandler(this._submitHandler);
     this.setResetButtonHandler(this._submitHandler);
+    this.setRollupButtonHandler(this._rollupHandler);
     this._subscribeOnEvents();
   }
 
