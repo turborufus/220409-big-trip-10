@@ -8,11 +8,12 @@ import {SORT_TYPE} from "../components/sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
 import {render, RENDER_POSITION} from "../utils/render.js";
 import {isSame} from "../utils/datetime.js";
+import {MODE} from "../controllers/point.js";
 
 const renderPoints = (pointListElement, points, onDataChange, onViewChange) => {
   return points.map((point) => {
     const pointController = new PointController(pointListElement, onDataChange, onViewChange);
-    pointController.render(point);
+    pointController.render(point, MODE.DEFAULT);
     return pointController;
   });
 };
@@ -89,16 +90,28 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-
-    if (isSuccess) {
-      pointController.render(newData);
+    let isSuccess = false;
+    if (newData) {
+      isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+      if (isSuccess) {
+        pointController.render(newData, MODE.DEFAULT);
+      }
+    } else {
+      isSuccess = this._pointsModel.removePoint(oldData.id);
+      if (isSuccess) {
+        this._updatePoints();
+      }
     }
+
+  }
+
+  _updatePoints() {
+    this._removePoints();
+    this._renderPoints(this._pointsModel.getPoints());
   }
 
   _onFilterChange() {
-    this._removePoints();
-    this._renderPoints(this._pointsModel.getPoints());
+    this._updatePoints();
   }
 
   _onSortTypeChange(sortType) {
