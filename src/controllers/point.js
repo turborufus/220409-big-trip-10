@@ -5,7 +5,7 @@ import {render, replace, RENDER_POSITION, remove} from "../utils/render.js";
 export const MODE = {
   DEFAULT: `default`,
   EDIT: `edit`,
-  ADD: `add`
+  ADDING: `add`
 };
 
 export const EMPTY_POINT = {
@@ -30,6 +30,12 @@ export default class PointController {
     this._mode = MODE.DEFAULT;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+  }
+
+  destroy() {
+    remove(this._editComponent);
+    remove(this._pointComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   render(point, mode) {
@@ -72,13 +78,13 @@ export default class PointController {
           render(this._container, this._pointComponent.getElement(), RENDER_POSITION.BEFOREEND);
         }
         break;
-      case MODE.ADD:
+      case MODE.ADDING:
         if (oldEditComponent && oldPointComponent) {
           remove(oldPointComponent);
           remove(oldEditComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        render(this._container, this.PointComponent.getElement(), RENDER_POSITION.AFTERBEGIN);
+        render(this._container, this._editComponent.getElement(), RENDER_POSITION.AFTERBEGIN);
         break;
     }
 
@@ -108,7 +114,7 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      if (this._mode === MODE.ADD) {
+      if (this._mode === MODE.ADDING) {
         this._onDataChange(this, EMPTY_POINT, null);
       }
       this._replaceEditToPoint();

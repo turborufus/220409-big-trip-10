@@ -8,7 +8,7 @@ import {SORT_TYPE} from "../components/sort.js";
 import {generateTripDays} from "../mock/trip-day.js";
 import {render, RENDER_POSITION} from "../utils/render.js";
 import {isSame} from "../utils/datetime.js";
-import {MODE} from "../controllers/point.js";
+import {MODE, EMPTY_POINT} from "../controllers/point.js";
 
 const renderPoints = (pointListElement, points, onDataChange, onViewChange) => {
   return points.map((point) => {
@@ -19,22 +19,29 @@ const renderPoints = (pointListElement, points, onDataChange, onViewChange) => {
 };
 
 export default class TripController {
-  constructor(container, pointsModel) {
+  constructor(container, pointsModel, tripInfoController, addPointButtonComponent) {
     this._pointsModel = pointsModel;
     this._pointControllers = [];
+    this._tripInfoController = tripInfoController;
 
     this._container = container;
     this._noPointsComponent = new NoPointsComponent();
     this._dayListComponent = new DayListComponent();
     this._sortComponent = new SortComponent();
+    this._addPointButtonComponent = addPointButtonComponent;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._onAddPointButtonClick = this._onAddPointButtonClick.bind(this);
+
+    this._creatingPoint = null;
 
     this._pointsModel.setChangeFilterHandler(this._onFilterChange);
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+
+    this._addPointButtonComponent.setAddPointButtonClickHandler(this._onAddPointButtonClick);
   }
 
   render() {
@@ -51,6 +58,22 @@ export default class TripController {
       render(container, tripDayListElement, RENDER_POSITION.BEFOREEND);
       this._renderPoints(points);
     }
+    this._updateTripInfo();
+  }
+
+  _createPoint() {
+    if (this._creatingPoint) {
+      return;
+    }
+
+    const tripDayListElement = this._dayListComponent.getElement();
+    const dayItemElement = new DayItemComponent(null, 0).getElement();
+    const pointListElement = new PointListComponent().getElement();
+    render(tripDayListElement, dayItemElement, RENDER_POSITION.AFTERBEGIN);
+    render(dayItemElement, pointListElement, RENDER_POSITION.BEFOREEND);
+
+    this._creatingPoint = new PointController(pointListElement, this._onDataChange, this._onViewChange);
+    this._creatingPoint.render(EMPTY_POINT, MODE.ADDING);
   }
 
   _renderPoints(points) {
@@ -83,31 +106,45 @@ export default class TripController {
   }
 
   _removePoints() {
-    const tripDayListElement = this._dayListComponent.getElement();
-    tripDayListElement.innerHTML = ``;
-
+    const dayListElement = this._dayListComponent.getElement();
+    dayListElement.innerHTML = ``;
     this._pointControllers = [];
   }
 
   _onDataChange(pointController, oldData, newData) {
     let isSuccess = false;
-    if (newData) {
+    if (oldData === EMPTY_POINT) {
+      this._creatingPoint = null;
+      if (newData === null) {
+        pointController.destroy();
+        this._updatePoints();
+      } else {
+        this._tasksModel.addTask(newData);
+        this._updateTripInfo();
+        pointController.render(newData, MODE.DEFAULT);
+      }
+    } else if (newData) {
       isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
       if (isSuccess) {
         pointController.render(newData, MODE.DEFAULT);
+        this._updateTripInfo();
       }
     } else {
       isSuccess = this._pointsModel.removePoint(oldData.id);
       if (isSuccess) {
+        this._updateTripInfo();
         this._updatePoints();
       }
     }
-
   }
 
   _updatePoints() {
     this._removePoints();
     this._renderPoints(this._pointsModel.getPoints());
+  }
+
+  _updateTripInfo() {
+    this._tripInfoController.render(this._pointsModel.getPoints());
   }
 
   _onFilterChange() {
@@ -137,5 +174,9 @@ export default class TripController {
 
   _onViewChange() {
     this._pointControllers.forEach((it) => it.setDefaultView());
+  }
+
+  _onAddPointButtonClick() {
+    this._createPoint();
   }
 }

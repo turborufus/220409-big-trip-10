@@ -6,13 +6,14 @@ import {generateDestination} from "../mock/destination.js";
 import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
 import {formatDateTime} from "../utils/datetime.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import {EMPTY_POINT} from '../controllers/point.js';
 
 
-const createEventTypeItemMarkup = (type, isChecked) => {
+const createEventTypeItemMarkup = (type, index, isChecked) => {
   return (`
     <div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked ? `checked` : ``} >
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+      <input id="event-type-${type}-${index + 1}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked ? `checked` : ``} >
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${index + 1}">${type}</label>
     </div>
   `);
 };
@@ -31,8 +32,8 @@ const formatDateValue = (date) => {
 };
 
 const createTimeMarkup = (start, stop) => {
-  const startValue = formatDateValue(start);
-  const stopValue = formatDateValue(stop);
+  const startValue = (start) ? formatDateValue(start) : ``;
+  const stopValue = (stop) ? formatDateValue(stop) : ``;
   return (`<label class="visually-hidden" for="event-start-time-1">
       From
     </label>
@@ -54,11 +55,11 @@ const createPriceMarkup = (price) => {
   `);
 };
 
-const createOfferMarkup = (offer, isChecked) => {
+const createOfferMarkup = (offer, index, isChecked) => {
   const {type, name, price} = offer;
   return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}" ${isChecked ? `checked` : ``}>
-      <label class="event__offer-label" for="event-offer-${type}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index + 1}" type="checkbox" name="event-offer-${type}" ${isChecked ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${type}-${index + 1}">
           <span class="event__offer-title">${name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${price}</span>
@@ -77,12 +78,12 @@ const createPhotosMarkup = (photoURLs) => {
 };
 
 const createPointDetailsMarkup = (point, availableOffers, destinationInfo) => {
-  const hasDestination = !!destinationInfo;
+  const hasDestination = destinationInfo.name.length > 0;
   if (hasDestination) {
     const {description, imgURLs} = destinationInfo;
     const photosMarkup = createPhotosMarkup(imgURLs).join(`\n`);
 
-    const offersMarkup = availableOffers.map((offer) => createOfferMarkup(offer, Array.from(point.offers)
+    const offersMarkup = availableOffers.map((offer, i) => createOfferMarkup(offer, i, Array.from(point.offers)
     .map((it) => {
       return it.name;
     }).includes(offer.name))).join(`\n`);
@@ -116,15 +117,17 @@ const createPointDetailsMarkup = (point, availableOffers, destinationInfo) => {
 };
 
 const createPointEditTemplate = (point, eventType, availableOffers, destinationInfo) => {
-  const isNewPoint = point === null;
+  const isNewPoint = point === EMPTY_POINT;
   const {type, start, stop, price, isFavorite} = point;
   const currentType = (eventType !== type) ? eventType : type;
+  const typeIconName = (currentType.length) ? currentType : `trip`;
+  const eventTypePlaceholder = (currentType.length) ? TYPE_PLACEHOLDER[currentType] : ``;
 
   const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
   const destName = destinationInfo ? destinationInfo.name : ``;
 
-  const transferTypesGroupMarkup = TRANSER_TYPES.map((it) => createEventTypeItemMarkup(it, it === currentType)).join(`\n`);
-  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it) => createEventTypeItemMarkup(it, it === currentType)).join(`\n`);
+  const transferTypesGroupMarkup = TRANSER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === currentType)).join(`\n`);
+  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSER_TYPES.length + i, it === currentType)).join(`\n`);
 
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
@@ -136,7 +139,7 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${currentType}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${typeIconName}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -155,7 +158,7 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
 
         <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-            ${TYPE_PLACEHOLDER[currentType]}
+            ${eventTypePlaceholder}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destName}" list="destination-list-1">
         <datalist id="destination-list-1">
@@ -191,6 +194,26 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
   `);
 };
 
+const parseFormData = (formData) => {
+  const type = formData.get(`event-type`);
+  const destination = formData.get(`event-destination`);
+  const start = formData.get(`event-start-time`);
+  const stop = formData.get(`event-end-time`);
+  const isFavorite = formData.get(`event-favorite`);
+  const price = formData.get(`event-price`);
+  const offers = formData.getAll(`event-offer-${type}`); // ???
+
+  return {
+    type,
+    destination,
+    start: start ? new Date(start) : null,
+    stop: stop ? new Date(stop) : null,
+    price,
+    offers: new Set(offers),
+    isFavorite: !!isFavorite
+  };
+};
+
 export default class PointEdit extends AbstractSmartComponent {
   constructor(point) {
     super();
@@ -201,6 +224,7 @@ export default class PointEdit extends AbstractSmartComponent {
     this._destinationInfo = generateDestination(this._point.destination);
 
     this._submitHandler = null;
+    this._resetHandler = null;
     this._rollupHandler = null;
     this._favoriteButtonHandler = null;
 
@@ -213,6 +237,14 @@ export default class PointEdit extends AbstractSmartComponent {
 
   getTemplate() {
     return createPointEditTemplate(this._point, this._eventType, this._eventTypeOffers, this._destinationInfo);
+  }
+
+  getData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
+    const newData = parseFormData(formData);
+    newData.id = String(new Date() + Math.random());
+    return newData;
   }
 
   rerender() {
@@ -228,6 +260,7 @@ export default class PointEdit extends AbstractSmartComponent {
 
   setResetButtonHandler(handler) {
     this.getElement().addEventListener(`reset`, handler);
+    this._resetHandler = handler;
   }
 
   setRollupButtonHandler(handler) {
@@ -245,9 +278,17 @@ export default class PointEdit extends AbstractSmartComponent {
   recoveryListeners() {
     this.setFavoriteButtonHandler(this._favoriteButtonHandler);
     this.setSaveButtonHandler(this._submitHandler);
-    this.setResetButtonHandler(this._submitHandler);
+    this.setResetButtonHandler(this._resetHandler);
     this.setRollupButtonHandler(this._rollupHandler);
     this._subscribeOnEvents();
+  }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+    super.removeElement();
   }
 
   _subscribeOnEvents() {
