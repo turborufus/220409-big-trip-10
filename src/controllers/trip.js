@@ -44,6 +44,16 @@ export default class TripController {
     this._addPointButtonComponent.setAddPointButtonClickHandler(this._onAddPointButtonClick);
   }
 
+  hide() {
+    this._sortComponent.hide();
+    this._dayListComponent.hide();
+  }
+
+  show() {
+    this._sortComponent.show();
+    this._dayListComponent.show();
+  }
+
   render() {
     const points = this._pointsModel.getPoints();
     const container = this._container;
