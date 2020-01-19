@@ -1,5 +1,6 @@
 import AddPointButtonComponent from "./components/add-point-button.js";
-import SiteMenuComponent from "./components/menu.js";
+import SiteMenuComponent, {MENU_TAB} from "./components/menu.js";
+import StatisticsComponent from './components/statistics.js';
 import TripController from "./controllers/trip.js";
 import PointsModel from "./models/points.js";
 import {generateMenuTabs} from "./mock/menuTab.js";
@@ -31,7 +32,8 @@ menuTitleElement.remove();
 filterTitleElement.remove();
 
 render(tripControlsElement, menuTitleElement, RENDER_POSITION.BEFOREEND);
-render(tripControlsElement, new SiteMenuComponent(menuTabs).getElement(), RENDER_POSITION.BEFOREEND);
+const siteMenuComponent = new SiteMenuComponent(menuTabs);
+render(tripControlsElement, siteMenuComponent.getElement(), RENDER_POSITION.BEFOREEND);
 render(tripControlsElement, filterTitleElement, RENDER_POSITION.BEFOREEND);
 
 const filterController = new FilterController(tripControlsElement, pointsModel);
@@ -42,4 +44,22 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 const tripInfoController = new TripInfoController(tripMainElement);
 const tripController = new TripController(tripEventsElement, pointsModel, tripInfoController, addPointButtonComponent);
 tripController.render();
+
+const statisticsComponent = new StatisticsComponent();
+render(tripEventsElement, statisticsComponent.getElement(), RENDER_POSITION.BEFOREEND);
+statisticsComponent.hide();
+
+siteMenuComponent.setChangeMenuTabHandler((menuTab) => {
+  switch (menuTab) {
+    case MENU_TAB.DEFAULT:
+      statisticsComponent.hide();
+      tripController.show();
+      break;
+    case MENU_TAB.STATS:
+      tripController.hide();
+      statisticsComponent.show();
+      break;
+  }
+  siteMenuComponent.setActiveTab(menuTab);
+});
 
