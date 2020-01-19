@@ -1,6 +1,6 @@
 import {formatDateTime} from "../utils/datetime.js";
 import AbstractComponent from "./abstract-component.js";
-import EventListComponent from "./events-list.js";
+import PointListComponent from "./point-list.js";
 
 const createDayInfoMarkup = (dayInMilliseconds, counter) => {
   const isEmptyDay = dayInMilliseconds === 0;
@@ -32,7 +32,7 @@ export default class DayItem extends AbstractComponent {
     super();
     this._date = date;
     this._counter = counter;
-    this._eventListComponent = new EventListComponent();
+    this._eventListComponent = new PointListComponent();
   }
 
   getTemplate() {

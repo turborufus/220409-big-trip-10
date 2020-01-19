@@ -15,3 +15,8 @@ export const ACTIVITY_TYPES = [`check-in`, `restaurant`, `sightseeing`];
 
 export const DESTINATIONS = [`Geneva`, `Amsterdam`, `Saint Petersburg`, `Moscow`, `Brugge`];
 
+export const FILTER_TYPE = {
+  ALL: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};

@@ -33,8 +33,8 @@ const createOffersMarkup = (offers) => {
     });
 };
 
-const createTripEventItemTemplate = (event) => {
-  const {type, destination, start, stop, price, offers} = event;
+const createPointTemplate = (point) => {
+  const {type, destination, start, stop, price, offers} = point;
   const schedule = createScheduleMarkup(start, stop);
   const offersMarkup = createOffersMarkup(Array.from(offers).slice(0, 3)).join(`\n`);
   const title = TYPE_PLACEHOLDER[type] + destination;
@@ -62,14 +62,14 @@ const createTripEventItemTemplate = (event) => {
   `);
 };
 
-export default class Event extends AbstractComponent {
-  constructor(event) {
+export default class Point extends AbstractComponent {
+  constructor(point) {
     super();
-    this._event = event;
+    this._point = point;
   }
 
   getTemplate() {
-    return createTripEventItemTemplate(this._event);
+    return createPointTemplate(this._point);
   }
 
   setRollupButtonHandler(handler) {
