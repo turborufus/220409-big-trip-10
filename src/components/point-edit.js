@@ -3,7 +3,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 import {generateOffers} from "../mock/offer.js";
 import {generateDestination} from "../mock/destination.js";
-import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
+import {TRANSFER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
 import {formatDateTime} from "../utils/datetime.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {EMPTY_POINT} from '../controllers/point.js';
@@ -126,8 +126,8 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
   const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
   const destName = destinationInfo ? destinationInfo.name : ``;
 
-  const transferTypesGroupMarkup = TRANSER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === currentType)).join(`\n`);
-  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSER_TYPES.length + i, it === currentType)).join(`\n`);
+  const transferTypesGroupMarkup = TRANSFER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === currentType)).join(`\n`);
+  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSFER_TYPES.length + i, it === currentType)).join(`\n`);
 
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
