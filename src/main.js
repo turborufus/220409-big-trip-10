@@ -44,11 +44,11 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 const tripInfoController = new TripInfoController(tripMainElement);
 const tripController = new TripController(tripEventsElement, pointsModel, tripInfoController, addPointButtonComponent);
 tripController.render();
-tripController.hide();
+tripController.show();
 
 const statisticsComponent = new StatisticsComponent(pointsModel.getAllPoints());
 render(tripEventsElement, statisticsComponent.getElement(), RENDER_POSITION.BEFOREEND);
-statisticsComponent.show();
+statisticsComponent.hide();
 
 siteMenuComponent.setChangeMenuTabHandler((menuTab) => {
   switch (menuTab) {
