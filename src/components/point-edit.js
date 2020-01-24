@@ -3,7 +3,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 import {generateOffers} from "../mock/offer.js";
 import {generateDestination} from "../mock/destination.js";
-import {TRANSER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
+import {TRANSFER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
 import {formatDateTime} from "../utils/datetime.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {EMPTY_POINT} from '../controllers/point.js';
@@ -57,8 +57,9 @@ const createPriceMarkup = (price) => {
 
 const createOfferMarkup = (offer, index, isChecked) => {
   const {type, name, price} = offer;
+  const suffix = name.replace(/ /g, `_`) + `|` + `${price}`;
   return (`<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index + 1}" type="checkbox" name="event-offer-${type}" ${isChecked ? `checked` : ``}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index + 1}" type="checkbox" name="event-offer-${suffix}" ${isChecked ? `checked` : ``}>
       <label class="event__offer-label" for="event-offer-${type}-${index + 1}">
           <span class="event__offer-title">${name}</span>
           &plus;
@@ -126,8 +127,8 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
   const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
   const destName = destinationInfo ? destinationInfo.name : ``;
 
-  const transferTypesGroupMarkup = TRANSER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === currentType)).join(`\n`);
-  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSER_TYPES.length + i, it === currentType)).join(`\n`);
+  const transferTypesGroupMarkup = TRANSFER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === currentType)).join(`\n`);
+  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSFER_TYPES.length + i, it === currentType)).join(`\n`);
 
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
@@ -201,14 +202,27 @@ const parseFormData = (formData) => {
   const stop = formData.get(`event-end-time`);
   const isFavorite = formData.get(`event-favorite`);
   const price = formData.get(`event-price`);
-  const offers = formData.getAll(`event-offer-${type}`); // ???
+  const offers = [];
+  const OFFER_PREFIX = `event-offer-`;
+  for (let pair of formData.entries()) {
+    if (pair[0].includes(OFFER_PREFIX)) {
+      const index = pair[0].indexOf(`|`);
+      const offerName = pair[0].substring(OFFER_PREFIX.length, index).replace(/_/g, ` `);
+      const offerPrice = pair[0].substring(index + 1);
+      const offer = {
+        name: offerName,
+        price: offerPrice ? parseInt(offerPrice, 10) : 0
+      };
+      offers.push(offer);
+    }
+  }
 
   return {
     type,
     destination,
     start: start ? new Date(start) : null,
     stop: stop ? new Date(stop) : null,
-    price,
+    price: price ? parseInt(price, 10) : 0,
     offers: new Set(offers),
     isFavorite: !!isFavorite
   };
@@ -336,7 +350,7 @@ export default class PointEdit extends AbstractSmartComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
-      dateFormat: `d/m/y H:i`,
+      dateFormat: `Y-m-dTH:i:S`,
       altFormat: `d/m/Y H:i`,
       // eslint-disable-next-line camelcase
       time_24hr: true,

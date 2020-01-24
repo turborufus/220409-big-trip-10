@@ -44,6 +44,16 @@ export default class TripController {
     this._addPointButtonComponent.setAddPointButtonClickHandler(this._onAddPointButtonClick);
   }
 
+  hide() {
+    this._sortComponent.hide();
+    this._dayListComponent.hide();
+  }
+
+  show() {
+    this._sortComponent.show();
+    this._dayListComponent.show();
+  }
+
   render() {
     const points = this._pointsModel.getPoints();
     const container = this._container;
@@ -106,9 +116,10 @@ export default class TripController {
   }
 
   _removePoints() {
+    this._pointControllers.forEach((controller) => controller.destroy());
+    this._pointControllers = [];
     const dayListElement = this._dayListComponent.getElement();
     dayListElement.innerHTML = ``;
-    this._pointControllers = [];
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -117,16 +128,15 @@ export default class TripController {
       this._creatingPoint = null;
       if (newData === null) {
         pointController.destroy();
-        this._updatePoints();
       } else {
-        this._tasksModel.addTask(newData);
+        this._pointsModel.addPoint(newData);
+        this._updatePoints();
         this._updateTripInfo();
-        pointController.render(newData, MODE.DEFAULT);
       }
     } else if (newData) {
       isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
       if (isSuccess) {
-        pointController.render(newData, MODE.DEFAULT);
+        this._updatePoints();
         this._updateTripInfo();
       }
     } else {
