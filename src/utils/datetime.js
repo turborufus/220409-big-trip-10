@@ -71,3 +71,7 @@ export const compareDates = (dateA, dateB) => {
   return dateA.getTime() - dateB.getTime();
 };
 
+export const getDayTimestamp = (date) => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+};
+
