@@ -5,9 +5,8 @@ import NoPointsComponent from "../components/no-points.js";
 import PointController from "./point.js";
 import SortComponent from "../components/sort.js";
 import {SORT_TYPE} from "../components/sort.js";
-import {generateTripDays} from "../mock/trip-day.js";
 import {render, RENDER_POSITION} from "../utils/render.js";
-import {isSame} from "../utils/datetime.js";
+import {isSame, getDayTimestamp} from "../utils/datetime.js";
 import {MODE, EMPTY_POINT} from "../controllers/point.js";
 
 const renderPoints = (pointListElement, points, onDataChange, onViewChange) => {
@@ -89,9 +88,7 @@ export default class TripController {
   _renderPoints(points) {
     const tripDayListElement = this._dayListComponent.getElement();
     if (this._sortComponent.currentSortType === SORT_TYPE.EVENT) {
-      const tripDays = generateTripDays(points.map((point) => {
-        return point.start;
-      }));
+      const tripDays = new Set(points.map((point) => getDayTimestamp(point.start)));
 
       Array.from(tripDays).sort().forEach((dayInMilliseconds, i) => {
         const dayItemComponent = new DayItemComponent(new Date(dayInMilliseconds), i + 1);
@@ -109,8 +106,10 @@ export default class TripController {
     } else {
       const dayItemComponent = new DayItemComponent(null, 0);
       render(tripDayListElement, dayItemComponent.getElement(), RENDER_POSITION.BEFOREEND);
+
       const pointListComponent = new PointListComponent();
       render(dayItemComponent.getElement(), pointListComponent.getElement(), RENDER_POSITION.BEFOREEND);
+
       this._pointControllers = renderPoints(pointListComponent.getElement(), points, this._onDataChange, this._onViewChange);
     }
   }
