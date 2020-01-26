@@ -1,3 +1,4 @@
+import API from './api.js';
 import AddPointButtonComponent from "./components/add-point-button.js";
 import SiteMenuComponent, {MENU_TAB} from "./components/menu.js";
 import StatisticsComponent from './components/statistics.js';
@@ -10,11 +11,34 @@ import FilterController from "./controllers/filter.js";
 import TripInfoController from "./controllers/trip-info.js";
 
 const EVENT_COUNT = 10;
+const AUTHORIZATION = `Basic eo0w590ik29889a`;
+const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const points = generatePoints(EVENT_COUNT);
 
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
+
+const api = new API(END_POINT, AUTHORIZATION);
+let availableOffers = [];
+let availableDestinations = [];
+
+console.log(availableOffers);
+api.getDestinations().then((destinations) => {
+  console.log(`Destinations!`);
+  console.log(destinations);
+  availableDestinations = destinations;
+  api.getOffers()
+    .then((offers) => {
+      console.log(`Offers!`);
+      console.log(offers);
+      console.log(`destinations in offers:`);
+      console.log(availableDestinations);
+      availableOffers = offers;
+      api.getPoints(availableDestinations, availableOffers)
+        .then((pointss) => console.log(pointss));
+    });
+});
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoMainElement = tripMainElement.querySelector(`.trip-info`);
