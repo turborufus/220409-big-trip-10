@@ -13,21 +13,6 @@ export default class Destination {
     }
   }
 
-  toRAW() {
-    const imagesToRAW = this.images.map((img) => {
-      return {
-        'src': img.src,
-        'description': img.description
-      };
-    });
-
-    return {
-      'description': this.description,
-      'name': this.name,
-      'pictures': imagesToRAW
-    };
-  }
-
   static parseDestination(data) {
     return new Destination(data);
   }

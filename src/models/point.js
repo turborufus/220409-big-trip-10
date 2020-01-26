@@ -1,13 +1,21 @@
 export default class Point {
-  constructor(data, destinations, offers) {
+  constructor(data) {
     this.id = data[`id`];
     this.type = data[`type`];
-    this.destination = this._getDestination(data[`destination`], destinations);
+    this.destination = this._getDestination(data[`destination`]);
     this.start = data[`date_from`] ? new Date(data[`date_from`]) : null;
     this.stop = data[`date_to`] ? new Date(data[`date_to`]) : null;
     this.price = data[`base_price`];
     this.isFavorite = Boolean(data[`is_favorite`]);
-    this.offers = data[`offers`] ? this._getSelectedOffers(data[`offers`], offers) : new Set();
+    const selectedOffers = data[`offers`] ? data[`offers`].map((offer) => {
+      return {
+        type: data[`type`],
+        name: offer[`title`],
+        price: offer[`price`]
+      };
+    }) : [];
+
+    this.offers = new Set(selectedOffers);
   }
 
   toRaw() {
@@ -15,35 +23,55 @@ export default class Point {
       'base_price': this.price,
       'date_from': this.start ? this.start.toISOString() : null,
       'date_to': this.stop ? this.stop.toISOString() : null,
-      'destination': this.destination,
+      'destination': {
+        'name': this.destination.name,
+        'description': this.destination.description,
+        'pictures': this.destination.images.map((image) => {
+          return {
+            'src': image.src,
+            'description': image.description
+          };
+        })
+      },
       'id': this.id,
       'is_favorite': this.isFavorite,
-      'offers': Array.from(this.offers),
+      'offers': Array.from(this.offers).map((offer) => {
+        return {
+          'title': offer.name,
+          'price': offer.price
+        };
+      }),
       'type': this.type
     };
   }
 
-  static parsePoint(data, availableDestinations, availableOffers) {
-    return new Point(data, availableDestinations, availableOffers);
+  static parsePoint(data) {
+    return new Point(data);
   }
 
-  static parsePoints(data, availableDestinations, availableOffers) {
-    return data.map((it) => Point.parsePoint(it, availableDestinations, availableOffers));
+  static parsePoints(data) {
+    return data.map(Point.parsePoint);
   }
 
   static clone(point) {
     return new Point(point.toRaw);
   }
 
-  _getDestination(data, availableDestinations) {
-    const destinationName = data[`name`];
-    const index = availableDestinations.map((dest) => dest.name).indexOf(destinationName.name);
-
-    if (index < 0) {
-      return null;
+  _getDestination(data) {
+    if (data) {
+      return {
+        name: data[`name`],
+        description: data[`description`],
+        images: data[`pictures`].map((picture) => {
+          return {
+            src: picture[`src`],
+            description: picture[`description`]
+          };
+        })
+      };
     }
 
-    return availableDestinations[index];
+    return null;
   }
 
   _getSelectedOffers(data, availableOffers) {

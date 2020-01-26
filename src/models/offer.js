@@ -14,20 +14,6 @@ export default class Offer {
     return this.offers;
   }
 
-  toRAW() {
-    return {
-      'type': this.type,
-      'offers': this.offers.map(this.offerToRAW)
-    };
-  }
-
-  offerToRAW(offer) {
-    return {
-      'title': offer.name,
-      'price': offer.price
-    };
-  }
-
   static parseOffer(data) {
     return new Offer(data);
   }
