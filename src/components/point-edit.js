@@ -1,12 +1,63 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
-import {generateOffers} from "../mock/offer.js";
-import {generateDestination} from "../mock/destination.js";
-import {TRANSFER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER, DESTINATIONS} from "../const.js";
+import {TRANSFER_TYPES, ACTIVITY_TYPES, TYPE_PLACEHOLDER} from "../const.js";
 import {formatDateTime} from "../utils/datetime.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {EMPTY_POINT} from '../controllers/point.js';
+
+const parseFormData = (formData) => {
+  const type = formData.get(`event-type`);
+
+  const destinationName = formData.get(`event-destination`);
+  const start = formData.get(`event-start-time`);
+  const stop = formData.get(`event-end-time`);
+  const isFavorite = formData.get(`event-favorite`);
+  const price = formData.get(`event-price`);
+  const offers = [];
+  const OFFER_PREFIX = `event-offer-`;
+  for (let pair of formData.entries()) {
+    if (pair[0].includes(OFFER_PREFIX)) {
+      const index = pair[0].indexOf(`|`);
+      const offerName = pair[0].substring(OFFER_PREFIX.length, index).replace(/_/g, ` `);
+      const offerPrice = pair[0].substring(index + 1);
+      const offer = {
+        name: offerName,
+        price: offerPrice ? parseInt(offerPrice, 10) : 0
+      };
+      offers.push(offer);
+    }
+  }
+
+  return {
+    type,
+    destination: {name: destinationName},
+    start: start ? new Date(start) : null,
+    stop: stop ? new Date(stop) : null,
+    price: price ? parseInt(price, 10) : 0,
+    offers,
+    isFavorite: !!isFavorite
+  };
+};
+
+const getDestinationByName = (destinationName, destinations) => {
+  const index = destinations.map((destination) => destination.name).indexOf(destinationName);
+
+  if (index < 0) {
+    return null;
+  }
+
+  return destinations[index];
+};
+
+const getOffersByType = (type, availableOffers) => {
+  const index = availableOffers.map((offerModel) => offerModel.type).indexOf(type);
+  if (index < 0) {
+    return [];
+  }
+
+  return availableOffers[index].getAllOffers();
+};
 
 
 const createEventTypeItemMarkup = (type, index, isChecked) => {
@@ -22,7 +73,7 @@ const createDestinationListMarkup = (destinations) => {
   return destinations
     .map((destination) => {
       return (`
-        <option value="${destination}"></option>
+        <option value="${destination.name}"></option>
       `);
     });
 };
@@ -69,25 +120,29 @@ const createOfferMarkup = (offer, index, isChecked) => {
   `);
 };
 
-const createPhotosMarkup = (photoURLs) => {
-  return photoURLs
-    .map((photoURL) => {
+const createPhotosMarkup = (images) => {
+  return images
+    .map((image) => {
+      const {src, description} = image;
       return (
-        `<img class="event__photo" src="${photoURL}" alt="Event photo">`
+        `<img class="event__photo" src="${src}" alt="${description}">`
       );
     });
 };
 
-const createPointDetailsMarkup = (point, availableOffers, destinationInfo) => {
-  const hasDestination = destinationInfo.name.length > 0;
-  if (hasDestination) {
-    const {description, imgURLs} = destinationInfo;
-    const photosMarkup = createPhotosMarkup(imgURLs).join(`\n`);
+const isOfferChecked = (offer, selectedOffers) => {
+  const offerNames = selectedOffers.map((selectedOffer) => selectedOffer.name);
+  return offerNames.includes(offer.name);
+};
 
-    const offersMarkup = availableOffers.map((offer, i) => createOfferMarkup(offer, i, Array.from(point.offers)
-    .map((it) => {
-      return it.name;
-    }).includes(offer.name))).join(`\n`);
+const createPointDetailsMarkup = (point, availableOffers, destination) => {
+  if (destination) {
+    const {description, images} = destination;
+    const photosMarkup = createPhotosMarkup(images).join(`\n`);
+
+    const offersByType = getOffersByType(point.type, availableOffers);
+    const offersMarkup = offersByType ? offersByType
+      .map((offer, i) => createOfferMarkup(offer, i, isOfferChecked(offer, point.offers))).join(`\n`) : ``;
 
     return (`
       <section class="event__details">
@@ -117,23 +172,23 @@ const createPointDetailsMarkup = (point, availableOffers, destinationInfo) => {
   }
 };
 
-const createPointEditTemplate = (point, eventType, availableOffers, destinationInfo) => {
+const createPointEditTemplate = (point, eventType, currentOffersByType, currentDestintion, allDestinations) => {
   const isNewPoint = point === EMPTY_POINT;
   const {type, start, stop, price, isFavorite} = point;
   const currentType = (eventType !== type) ? eventType : type;
   const typeIconName = (currentType.length) ? currentType : `trip`;
   const eventTypePlaceholder = (currentType.length) ? TYPE_PLACEHOLDER[currentType] : ``;
 
-  const destinationList = createDestinationListMarkup(DESTINATIONS).join(`\n`);
-  const destName = destinationInfo ? destinationInfo.name : ``;
+  const destinationList = createDestinationListMarkup(allDestinations).join(`\n`);
+  const destinationName = currentDestintion ? currentDestintion.name : ``;
 
-  const transferTypesGroupMarkup = TRANSFER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === currentType)).join(`\n`);
-  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSFER_TYPES.length + i, it === currentType)).join(`\n`);
+  const transferTypesGroupMarkup = TRANSFER_TYPES.map((it, i) => createEventTypeItemMarkup(it, i, it === eventType)).join(`\n`);
+  const activityTypesGroupMarkup = ACTIVITY_TYPES.map((it, i) => createEventTypeItemMarkup(it, TRANSFER_TYPES.length + i, it === eventType)).join(`\n`);
 
   const timeMarkup = createTimeMarkup(start, stop);
   const priceMarkup = createPriceMarkup(price);
 
-  const pointDetailsMarkup = createPointDetailsMarkup(point, availableOffers, destinationInfo);
+  const pointDetailsMarkup = createPointDetailsMarkup(point, currentOffersByType, currentDestintion);
 
   return (`<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -161,7 +216,7 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
         <label class="event__label  event__type-output" for="event-destination-1">
             ${eventTypePlaceholder}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destName}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
         <datalist id="destination-list-1">
           ${destinationList}
         </datalist>
@@ -195,47 +250,18 @@ const createPointEditTemplate = (point, eventType, availableOffers, destinationI
   `);
 };
 
-const parseFormData = (formData) => {
-  const type = formData.get(`event-type`);
-  const destination = formData.get(`event-destination`);
-  const start = formData.get(`event-start-time`);
-  const stop = formData.get(`event-end-time`);
-  const isFavorite = formData.get(`event-favorite`);
-  const price = formData.get(`event-price`);
-  const offers = [];
-  const OFFER_PREFIX = `event-offer-`;
-  for (let pair of formData.entries()) {
-    if (pair[0].includes(OFFER_PREFIX)) {
-      const index = pair[0].indexOf(`|`);
-      const offerName = pair[0].substring(OFFER_PREFIX.length, index).replace(/_/g, ` `);
-      const offerPrice = pair[0].substring(index + 1);
-      const offer = {
-        name: offerName,
-        price: offerPrice ? parseInt(offerPrice, 10) : 0
-      };
-      offers.push(offer);
-    }
-  }
-
-  return {
-    type,
-    destination,
-    start: start ? new Date(start) : null,
-    stop: stop ? new Date(stop) : null,
-    price: price ? parseInt(price, 10) : 0,
-    offers: new Set(offers),
-    isFavorite: !!isFavorite
-  };
-};
 
 export default class PointEdit extends AbstractSmartComponent {
-  constructor(point) {
+  constructor(point, destinations, availableOffers) {
     super();
     this._point = point;
 
     this._eventType = this._point.type;
-    this._eventTypeOffers = generateOffers(this._eventType);
-    this._destinationInfo = generateDestination(this._point.destination);
+    this._offersByType = getOffersByType(this._eventType, availableOffers);
+    this._availableOffers = availableOffers;
+
+    this._destination = this._point.destination;
+    this._allDestinations = destinations;
 
     this._submitHandler = null;
     this._resetHandler = null;
@@ -250,14 +276,15 @@ export default class PointEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createPointEditTemplate(this._point, this._eventType, this._eventTypeOffers, this._destinationInfo);
+    return createPointEditTemplate(this._point, this._eventType, this._availableOffers, this._destination, this._allDestinations);
   }
 
   getData() {
     const form = this.getElement();
     const formData = new FormData(form);
     const newData = parseFormData(formData);
-    newData.id = String(new Date() + Math.random());
+    const destination = getDestinationByName(newData.destination.name, this._allDestinations);
+    newData.destination = destination;
     return newData;
   }
 
@@ -312,7 +339,7 @@ export default class PointEdit extends AbstractSmartComponent {
     elementTypes.forEach((eventType) => eventType.addEventListener(`change`, (evt) => {
       if (evt.target.value !== this._eventType) {
         this._eventType = evt.target.value;
-        this._eventTypeOffers = generateOffers(this._eventType);
+        this._offersByType = getOffersByType(this._eventType, this._availableOffers);
       }
       this.rerender();
     }));
@@ -320,8 +347,8 @@ export default class PointEdit extends AbstractSmartComponent {
     element.querySelector(`.event__input--destination`)
       .addEventListener(`change`, (evt) => {
         const destName = evt.target.value;
-        if (this._destinationInfo === null || destName !== this._destinationInfo.name) {
-          this._destinationInfo = destName.length > 0 ? generateDestination(destName) : null;
+        if (this._point.destination === null || destName !== this._point.destination.name) {
+          this._destination = getDestinationByName(destName, this._allDestinations);
         }
         this.rerender();
       });

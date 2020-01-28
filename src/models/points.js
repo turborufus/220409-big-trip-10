@@ -1,12 +1,23 @@
 import {FILTER_TYPE} from "../const.js";
+import {generateID} from '../utils/common.js';
 import {getPointsByFilter} from "../utils/filter.js";
 
 export default class Points {
   constructor() {
     this._points = [];
+    this._offers = [];
+    this._destinations = [];
     this._activeFilterType = FILTER_TYPE.ALL;
 
     this._filterChangeHandlers = [];
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  getDestinations() {
+    return this._destinations;
   }
 
   getPoints() {
@@ -22,11 +33,20 @@ export default class Points {
     this._callHandlers(this._filterChangeHandlers);
   }
 
+  setDestinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
+  }
+
   setPoints(points) {
     this._points = points;
   }
 
   addPoint(point) {
+    point.id = generateID();
     this._points = [].concat(point, this._points);
   }
 

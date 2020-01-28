@@ -4,13 +4,12 @@ import {render, replace, RENDER_POSITION, remove} from "../utils/render.js";
 
 export const MODE = {
   DEFAULT: `default`,
-  EDIT: `edit`,
   ADDING: `add`
 };
 
 export const EMPTY_POINT = {
   type: ``,
-  destination: ``,
+  destination: null,
   start: null,
   stop: null,
   price: 0,
@@ -19,10 +18,10 @@ export const EMPTY_POINT = {
 };
 
 export default class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, changeDataHandler, changeViewHandler) {
     this._container = container;
-    this._onDataChange = onDataChange;
-    this._onViewChange = onViewChange;
+    this._changeDataHandler = changeDataHandler;
+    this._changeViewHandler = changeViewHandler;
 
     this._pointComponent = null;
     this._editComponent = null;
@@ -38,13 +37,13 @@ export default class PointController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
-  render(point, mode) {
+  render(point, mode, destinations, offers) {
     const oldPointComponent = this._pointComponent;
     const oldEditComponent = this._editComponent;
     this._mode = mode;
 
     this._pointComponent = new PointComponent(point);
-    this._editComponent = new PointEditComponent(point);
+    this._editComponent = new PointEditComponent(point, destinations, offers);
 
     this._pointComponent.setRollupButtonHandler(() => {
       this._replacePointToEdit();
@@ -54,17 +53,17 @@ export default class PointController {
     this._editComponent.setSaveButtonHandler((evt) => {
       evt.preventDefault();
       const data = this._editComponent.getData();
-      this._onDataChange(this, point, data);
+      this._changeDataHandler(this, point, data);
     });
     this._editComponent.setResetButtonHandler(() => {
-      this._onDataChange(this, point, null);
+      this._changeDataHandler(this, point, null);
     });
     this._editComponent.setRollupButtonHandler(() => {
       this._replaceEditToPoint();
     });
 
     this._editComponent.setFavoriteButtonHandler(() => {
-      this._onDataChange(this, point, Object.assign({}, point, {
+      this._changeDataHandler(this, point, Object.assign({}, point, {
         isFavorite: !point.isFavorite,
       }));
     });
@@ -104,7 +103,7 @@ export default class PointController {
   }
 
   _replacePointToEdit() {
-    this._onViewChange();
+    this._changeViewHandler();
 
     replace(this._editComponent, this._pointComponent);
     this._mode = MODE.EDIT;
@@ -115,7 +114,7 @@ export default class PointController {
 
     if (isEscKey) {
       if (this._mode === MODE.ADDING) {
-        this._onDataChange(this, EMPTY_POINT, null);
+        this._changeDataHandler(this, EMPTY_POINT, null);
       }
       this._replaceEditToPoint();
       document.removeEventListener(`keydown`, this._onEscKeyDown);

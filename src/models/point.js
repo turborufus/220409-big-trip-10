@@ -7,15 +7,13 @@ export default class Point {
     this.stop = data[`date_to`] ? new Date(data[`date_to`]) : null;
     this.price = data[`base_price`];
     this.isFavorite = Boolean(data[`is_favorite`]);
-    const selectedOffers = data[`offers`] ? data[`offers`].map((offer) => {
+    this.offers = data[`offers`] ? data[`offers`].map((offer) => {
       return {
         type: data[`type`],
         name: offer[`title`],
         price: offer[`price`]
       };
     }) : [];
-
-    this.offers = new Set(selectedOffers);
   }
 
   toRaw() {
@@ -35,7 +33,7 @@ export default class Point {
       },
       'id': this.id,
       'is_favorite': this.isFavorite,
-      'offers': Array.from(this.offers).map((offer) => {
+      'offers': this.offers.map((offer) => {
         return {
           'title': offer.name,
           'price': offer.price
@@ -80,6 +78,6 @@ export default class Point {
       const index = offerNames.indexOf(offer.name);
       return index >= 0;
     });
-    return new Set(offers);
+    return offers;
   }
 }

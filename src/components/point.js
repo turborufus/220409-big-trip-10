@@ -37,7 +37,7 @@ const createPointTemplate = (point) => {
   const {type, destination, start, stop, price, offers} = point;
   const schedule = createScheduleMarkup(start, stop);
   const offersMarkup = createOffersMarkup(Array.from(offers).slice(0, 3)).join(`\n`);
-  const title = TYPE_PLACEHOLDER[type] + destination;
+  const title = destination ? TYPE_PLACEHOLDER[type] + destination.name : ``;
   return (`<div class="event">
         <div class="event__type">
             <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
