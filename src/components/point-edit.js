@@ -6,41 +6,7 @@ import {formatDateTime} from "../utils/datetime.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {EMPTY_POINT} from '../controllers/point.js';
 
-const parseFormData = (formData) => {
-  const type = formData.get(`event-type`);
-
-  const destinationName = formData.get(`event-destination`);
-  const start = formData.get(`event-start-time`);
-  const stop = formData.get(`event-end-time`);
-  const isFavorite = formData.get(`event-favorite`);
-  const price = formData.get(`event-price`);
-  const offers = [];
-  const OFFER_PREFIX = `event-offer-`;
-  for (let pair of formData.entries()) {
-    if (pair[0].includes(OFFER_PREFIX)) {
-      const index = pair[0].indexOf(`|`);
-      const offerName = pair[0].substring(OFFER_PREFIX.length, index).replace(/_/g, ` `);
-      const offerPrice = pair[0].substring(index + 1);
-      const offer = {
-        name: offerName,
-        price: offerPrice ? parseInt(offerPrice, 10) : 0
-      };
-      offers.push(offer);
-    }
-  }
-
-  return {
-    type,
-    destination: {name: destinationName},
-    start: start ? new Date(start) : null,
-    stop: stop ? new Date(stop) : null,
-    price: price ? parseInt(price, 10) : 0,
-    offers,
-    isFavorite: !!isFavorite
-  };
-};
-
-const getDestinationByName = (destinationName, destinations) => {
+export const getDestinationByName = (destinationName, destinations) => {
   const index = destinations.map((destination) => destination.name).indexOf(destinationName);
 
   if (index < 0) {
@@ -135,12 +101,11 @@ const isOfferChecked = (offer, selectedOffers) => {
   return offerNames.includes(offer.name);
 };
 
-const createPointDetailsMarkup = (point, availableOffers, destination) => {
+const createPointDetailsMarkup = (point, offersByType, destination) => {
   if (destination) {
     const {description, images} = destination;
     const photosMarkup = createPhotosMarkup(images).join(`\n`);
 
-    const offersByType = getOffersByType(point.type, availableOffers);
     const offersMarkup = offersByType ? offersByType
       .map((offer, i) => createOfferMarkup(offer, i, isOfferChecked(offer, point.offers))).join(`\n`) : ``;
 
@@ -276,16 +241,12 @@ export default class PointEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createPointEditTemplate(this._point, this._eventType, this._availableOffers, this._destination, this._allDestinations);
+    return createPointEditTemplate(this._point, this._eventType, this._offersByType, this._destination, this._allDestinations);
   }
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-    const newData = parseFormData(formData);
-    const destination = getDestinationByName(newData.destination.name, this._allDestinations);
-    newData.destination = destination;
-    return newData;
+    return new FormData(form);
   }
 
   rerender() {

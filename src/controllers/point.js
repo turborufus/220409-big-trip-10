@@ -1,5 +1,6 @@
 import PointComponent from "../components/point.js";
-import PointEditComponent from "../components/point-edit.js";
+import PointEditComponent, {getDestinationByName} from "../components/point-edit.js";
+import PointModel from '../models/point.js';
 import {render, replace, RENDER_POSITION, remove} from "../utils/render.js";
 
 export const MODE = {
@@ -15,6 +16,41 @@ export const EMPTY_POINT = {
   price: 0,
   offers: [],
   isFavorite: false
+};
+
+const parseFormData = (formData, destinations) => {
+  const type = formData.get(`event-type`);
+
+  const destinationName = formData.get(`event-destination`);
+  const start = formData.get(`event-start-time`);
+  const stop = formData.get(`event-end-time`);
+  const isFavorite = formData.get(`event-favorite`);
+  const price = formData.get(`event-price`);
+  const offers = [];
+  const OFFER_PREFIX = `event-offer-`;
+  for (let pair of formData.entries()) {
+    if (pair[0].includes(OFFER_PREFIX)) {
+      const index = pair[0].indexOf(`|`);
+      const offerName = pair[0].substring(OFFER_PREFIX.length, index).replace(/_/g, ` `);
+      const offerPrice = pair[0].substring(index + 1);
+      const offer = {
+        name: offerName,
+        price: offerPrice ? parseInt(offerPrice, 10) : 0
+      };
+      offers.push(offer);
+    }
+  }
+
+  const destination = getDestinationByName(destinationName, destinations);
+  return {
+    type,
+    destination,
+    start: start ? new Date(start) : null,
+    stop: stop ? new Date(stop) : null,
+    price: price ? parseInt(price, 10) : 0,
+    offers,
+    isFavorite: !!isFavorite
+  };
 };
 
 export default class PointController {
@@ -52,7 +88,9 @@ export default class PointController {
 
     this._editComponent.setSaveButtonHandler((evt) => {
       evt.preventDefault();
-      const data = this._editComponent.getData();
+      const formData = this._editComponent.getData();
+      const data = parseFormData(formData, destinations);
+
       this._changeDataHandler(this, point, data);
     });
     this._editComponent.setResetButtonHandler(() => {
@@ -63,9 +101,10 @@ export default class PointController {
     });
 
     this._editComponent.setFavoriteButtonHandler(() => {
-      this._changeDataHandler(this, point, Object.assign({}, point, {
-        isFavorite: !point.isFavorite,
-      }));
+      const newPoint = PointModel.clone(point);
+      newPoint.isFavorite = !point.isFavorite;
+
+      this._changeDataHandler(this, point, newPoint);
     });
 
     switch (mode) {
