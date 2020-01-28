@@ -42,8 +42,8 @@ const formatDurationIntoString = (duration) => {
   }
 };
 
-const calculateSpentTimeByDestination = (points, destination) => {
-  const pointsByDest = points.filter((point) => point.destination === destination);
+const calculateSpentTimeByDestination = (points, destinationName) => {
+  const pointsByDest = points.filter((point) => point.destination.name === destinationName);
   const duration = pointsByDest.map((point) => {
     const momentStop = moment(point.stop);
     const momentStart = moment(point.start);
@@ -209,7 +209,7 @@ const renderTransportChart = (ctx, points) => {
 };
 
 const renderTimeSpentChart = (ctx, points) => {
-  const destinations = points.map((point) => point.destination).filter(getUniqItems);
+  const destinations = points.map((point) => point.destination.name).filter(getUniqItems);
 
   return new Chart(ctx, {
     plugins: [ChartDataLabels],
