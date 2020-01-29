@@ -37,7 +37,7 @@ const filterController = new FilterController(tripControlsElement, pointsModel);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripInfoController = new TripInfoController(tripMainElement);
-const tripController = new TripController(tripEventsElement, pointsModel, tripInfoController, addPointButtonComponent);
+const tripController = new TripController(tripEventsElement, pointsModel, tripInfoController, addPointButtonComponent, api);
 
 const statisticsComponent = new StatisticsComponent(pointsModel.getAllPoints());
 render(tripEventsElement, statisticsComponent.getElement(), RENDER_POSITION.BEFOREEND);

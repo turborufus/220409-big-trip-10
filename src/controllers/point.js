@@ -42,15 +42,30 @@ const parseFormData = (formData, destinations) => {
   }
 
   const destination = getDestinationByName(destinationName, destinations);
-  return {
-    type,
-    destination,
-    start: start ? new Date(start) : null,
-    stop: stop ? new Date(stop) : null,
-    price: price ? parseInt(price, 10) : 0,
-    offers,
-    isFavorite: !!isFavorite
-  };
+
+  return new PointModel({
+    'base_price': price ? parseInt(price, 10) : 0,
+    'date_from': start ? new Date(start) : null,
+    'date_to': stop ? new Date(stop) : null,
+    'destination': {
+      'name': destination.name,
+      'description': destination.description,
+      'pictures': destination.images.map((image) => {
+        return {
+          'src': image.src,
+          'description': image.description
+        };
+      })
+    },
+    'is_favorite': isFavorite,
+    'offers': offers.map((offer) => {
+      return {
+        'title': offer.name,
+        'price': offer.price
+      };
+    }),
+    'type': type
+  });
 };
 
 export default class PointController {

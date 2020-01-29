@@ -18,7 +18,7 @@ const renderPoints = (pointListElement, points, changeDataHandler, changeViewHan
 };
 
 export default class TripController {
-  constructor(container, pointsModel, tripInfoController, addPointButtonComponent) {
+  constructor(container, pointsModel, tripInfoController, addPointButtonComponent, api) {
     this._pointsModel = pointsModel;
     this._pointControllers = [];
     this._tripInfoController = tripInfoController;
@@ -34,6 +34,7 @@ export default class TripController {
     this._changeSortTypeHandler = this._changeSortTypeHandler.bind(this);
     this._changeViewHandler = this._changeViewHandler.bind(this);
     this._clickAddPointButtonHandler = this._clickAddPointButtonHandler.bind(this);
+    this._api = api;
 
     this._creatingPoint = null;
 
@@ -137,11 +138,15 @@ export default class TripController {
         this._updateTripInfo();
       }
     } else if (newData) {
-      isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-      if (isSuccess) {
-        this._updatePoints();
-        this._updateTripInfo();
-      }
+      this._api.updatePoint(oldData.id, newData)
+        .then((pointModel) => {
+          isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
+
+          if (isSuccess) {
+            this._updatePoints();
+            this._updateTripInfo();
+          }
+        });
     } else {
       isSuccess = this._pointsModel.removePoint(oldData.id);
       if (isSuccess) {

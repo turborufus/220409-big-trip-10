@@ -16,7 +16,7 @@ export default class Point {
     }) : [];
   }
 
-  toRaw() {
+  toRAW() {
     return {
       'base_price': this.price,
       'date_from': this.start ? this.start.toISOString() : null,
