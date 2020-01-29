@@ -1,16 +1,16 @@
 import PointComponent from "../components/point.js";
-import PointEditComponent from "../components/point-edit.js";
+import PointEditComponent, {getDestinationByName} from "../components/point-edit.js";
+import PointModel from '../models/point.js';
 import {render, replace, RENDER_POSITION, remove} from "../utils/render.js";
 
 export const MODE = {
   DEFAULT: `default`,
-  EDIT: `edit`,
   ADDING: `add`
 };
 
 export const EMPTY_POINT = {
   type: ``,
-  destination: ``,
+  destination: null,
   start: null,
   stop: null,
   price: 0,
@@ -18,11 +18,61 @@ export const EMPTY_POINT = {
   isFavorite: false
 };
 
+const parseFormData = (formData, destinations) => {
+  const type = formData.get(`event-type`);
+
+  const destinationName = formData.get(`event-destination`);
+  const start = formData.get(`event-start-time`);
+  const stop = formData.get(`event-end-time`);
+  const isFavorite = formData.get(`event-favorite`);
+  const price = formData.get(`event-price`);
+  const offers = [];
+  const OFFER_PREFIX = `event-offer-`;
+  for (let pair of formData.entries()) {
+    if (pair[0].includes(OFFER_PREFIX)) {
+      const index = pair[0].indexOf(`|`);
+      const offerName = pair[0].substring(OFFER_PREFIX.length, index).replace(/_/g, ` `);
+      const offerPrice = pair[0].substring(index + 1);
+      const offer = {
+        name: offerName,
+        price: offerPrice ? parseInt(offerPrice, 10) : 0
+      };
+      offers.push(offer);
+    }
+  }
+
+  const destination = getDestinationByName(destinationName, destinations);
+
+  return new PointModel({
+    'base_price': price ? parseInt(price, 10) : 0,
+    'date_from': start ? new Date(start) : null,
+    'date_to': stop ? new Date(stop) : null,
+    'destination': {
+      'name': destination.name,
+      'description': destination.description,
+      'pictures': destination.images.map((image) => {
+        return {
+          'src': image.src,
+          'description': image.description
+        };
+      })
+    },
+    'is_favorite': isFavorite,
+    'offers': offers.map((offer) => {
+      return {
+        'title': offer.name,
+        'price': offer.price
+      };
+    }),
+    'type': type
+  });
+};
+
 export default class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, changeDataHandler, changeViewHandler) {
     this._container = container;
-    this._onDataChange = onDataChange;
-    this._onViewChange = onViewChange;
+    this._changeDataHandler = changeDataHandler;
+    this._changeViewHandler = changeViewHandler;
 
     this._pointComponent = null;
     this._editComponent = null;
@@ -38,13 +88,13 @@ export default class PointController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
-  render(point, mode) {
+  render(point, mode, destinations, offers) {
     const oldPointComponent = this._pointComponent;
     const oldEditComponent = this._editComponent;
     this._mode = mode;
 
     this._pointComponent = new PointComponent(point);
-    this._editComponent = new PointEditComponent(point);
+    this._editComponent = new PointEditComponent(point, destinations, offers);
 
     this._pointComponent.setRollupButtonHandler(() => {
       this._replacePointToEdit();
@@ -53,20 +103,23 @@ export default class PointController {
 
     this._editComponent.setSaveButtonHandler((evt) => {
       evt.preventDefault();
-      const data = this._editComponent.getData();
-      this._onDataChange(this, point, data);
+      const formData = this._editComponent.getData();
+      const data = parseFormData(formData, destinations);
+
+      this._changeDataHandler(this, point, data);
     });
     this._editComponent.setResetButtonHandler(() => {
-      this._onDataChange(this, point, null);
+      this._changeDataHandler(this, point, null);
     });
     this._editComponent.setRollupButtonHandler(() => {
       this._replaceEditToPoint();
     });
 
     this._editComponent.setFavoriteButtonHandler(() => {
-      this._onDataChange(this, point, Object.assign({}, point, {
-        isFavorite: !point.isFavorite,
-      }));
+      const newPoint = PointModel.clone(point);
+      newPoint.isFavorite = !point.isFavorite;
+
+      this._changeDataHandler(this, point, newPoint);
     });
 
     switch (mode) {
@@ -104,7 +157,7 @@ export default class PointController {
   }
 
   _replacePointToEdit() {
-    this._onViewChange();
+    this._changeViewHandler();
 
     replace(this._editComponent, this._pointComponent);
     this._mode = MODE.EDIT;
@@ -115,7 +168,7 @@ export default class PointController {
 
     if (isEscKey) {
       if (this._mode === MODE.ADDING) {
-        this._onDataChange(this, EMPTY_POINT, null);
+        this._changeDataHandler(this, EMPTY_POINT, null);
       }
       this._replaceEditToPoint();
       document.removeEventListener(`keydown`, this._onEscKeyDown);

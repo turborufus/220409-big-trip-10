@@ -20,7 +20,7 @@ const createTripInfoTemplate = (points) => {
   let tripCost = 0;
   if (points.length > 0) {
     const destinations = points.map((point) => {
-      return point.destination;
+      return point.destination.name;
     });
 
     if (destinations.length > 3) {

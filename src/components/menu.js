@@ -22,9 +22,9 @@ const createTripMenuTemplate = (menuTabs, activeTab) => {
 
 export default class SiteMenu extends AbstractSmartComponent {
 
-  constructor(menuTabs) {
+  constructor() {
     super();
-    this._menuTabs = menuTabs;
+    this._menuTabs = [MENU_TAB.DEFAULT, MENU_TAB.STATS];
     this._activeTab = MENU_TAB.DEFAULT;
     this._changeTabHandler = null;
   }
