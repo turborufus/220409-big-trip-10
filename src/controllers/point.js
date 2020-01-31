@@ -3,6 +3,8 @@ import PointEditComponent, {getDestinationByName} from "../components/point-edit
 import PointModel from '../models/point.js';
 import {render, replace, RENDER_POSITION, remove} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const MODE = {
   DEFAULT: `default`,
   ADDING: `add`
@@ -158,6 +160,21 @@ export default class PointController {
     if (this._mode !== MODE.DEFAULT) {
       this._replaceEditToPoint();
     }
+  }
+
+  shake() {
+    this._editComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._editComponent.getElement().style.animation = ``;
+      this._pointComponent.getElement().style.animation = ``;
+
+      this._editComponent.setData({
+        SAVE_TEXT: `Save`,
+        DELETE_TEXT: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceEditToPoint() {
