@@ -103,14 +103,25 @@ export default class PointController {
 
     this._editComponent.setSaveButtonHandler((evt) => {
       evt.preventDefault();
+
+      this._editComponent.setData({
+        SAVE_TEXT: `Saving...`
+      });
+
       const formData = this._editComponent.getData();
       const data = parseFormData(formData, destinations);
 
       this._changeDataHandler(this, point, data);
     });
+
     this._editComponent.setResetButtonHandler(() => {
+      this._editComponent.setData({
+        DELETE_TEXT: `Deleting...`
+      });
+
       this._changeDataHandler(this, point, null);
     });
+
     this._editComponent.setRollupButtonHandler(() => {
       this._replaceEditToPoint();
     });
