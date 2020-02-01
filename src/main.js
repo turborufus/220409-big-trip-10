@@ -9,8 +9,8 @@ import FilterController from "./controllers/filter.js";
 import TripInfoController from "./controllers/trip-info.js";
 import {MenuTab} from "./const.js";
 
-const AUTHORIZATION = `Basic eo0w590ik29887b`;
-const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
+const AUTHORIZATION = `Basic eo0w590ik29887a`;
+const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 
 const api = new API(END_POINT, AUTHORIZATION);
 
@@ -42,6 +42,8 @@ const tripController = new TripController(tripEventsElement, pointsModel, tripIn
 
 const statisticsComponent = new StatisticsComponent(pointsModel.getAllPoints());
 render(tripEventsElement, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
+
+tripController.renderLoading();
 
 Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()])
   .then(([destinations, offers, points]) => {
