@@ -3,7 +3,7 @@ import Offer from './models/offer.js';
 import Point from './models/point.js';
 
 
-const METHOD = {
+const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
@@ -45,7 +45,7 @@ const API = class {
   createPoint(point) {
     return this._load({
       url: `points`,
-      method: METHOD.POST,
+      method: Method.POST,
       body: JSON.stringify(point.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -56,7 +56,7 @@ const API = class {
   updatePoint(id, data) {
     return this._load({
       url: `points/${id}`,
-      method: METHOD.PUT,
+      method: Method.PUT,
       body: JSON.stringify(data.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -67,11 +67,11 @@ const API = class {
   deletePoint(id) {
     return this._load({
       url: `points/${id}`,
-      method: METHOD.DELETE
+      method: Method.DELETE
     });
   }
 
-  _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
