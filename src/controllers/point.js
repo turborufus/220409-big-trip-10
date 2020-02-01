@@ -1,12 +1,14 @@
 import PointComponent from "../components/point.js";
 import PointEditComponent, {getDestinationByName} from "../components/point-edit.js";
 import PointModel from '../models/point.js';
-import {render, replace, RENDER_POSITION, remove} from "../utils/render.js";
+import {render, replace, RenderPosition, remove} from "../utils/render.js";
+import {ButtonText} from "../const.js";
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export const MODE = {
+export const Mode = {
   DEFAULT: `default`,
+  EDIT: `edit`,
   ADDING: `add`
 };
 
@@ -79,7 +81,7 @@ export default class PointController {
     this._pointComponent = null;
     this._editComponent = null;
 
-    this._mode = MODE.DEFAULT;
+    this._mode = Mode.DEFAULT;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
@@ -106,21 +108,19 @@ export default class PointController {
     this._editComponent.setSaveButtonHandler((evt) => {
       evt.preventDefault();
 
-      this._editComponent.setData({
-        SAVE_TEXT: `Saving...`
-      });
-
       const formData = this._editComponent.getData();
-      const data = parseFormData(formData, destinations);
-
-      this._changeDataHandler(this, point, data);
+      const isValid = this._editComponent.isFormValid(formData);
+      if (isValid) {
+        this._editComponent.setSaveButtonText(ButtonText.SAVING);
+        this._editComponent.setDisabledForm(true);
+        const data = parseFormData(formData, destinations);
+        this._changeDataHandler(this, point, data);
+      }
     });
 
     this._editComponent.setResetButtonHandler(() => {
-      this._editComponent.setData({
-        DELETE_TEXT: `Deleting...`
-      });
-
+      this._editComponent.setDeleteButtonText(ButtonText.DELETING);
+      this._editComponent.setDisabledForm(true);
       this._changeDataHandler(this, point, null);
     });
 
@@ -129,73 +129,86 @@ export default class PointController {
     });
 
     this._editComponent.setFavoriteButtonHandler(() => {
+      if (point === EMPTY_POINT) {
+        return;
+      }
       const newPoint = PointModel.clone(point);
       newPoint.isFavorite = !point.isFavorite;
-
       this._changeDataHandler(this, point, newPoint);
     });
 
     switch (mode) {
-      case MODE.DEFAULT:
+      case Mode.DEFAULT:
         if (oldEditComponent && oldPointComponent) {
           replace(this._pointComponent, oldPointComponent);
           replace(this._editComponent, oldEditComponent);
         } else {
-          render(this._container, this._pointComponent.getElement(), RENDER_POSITION.BEFOREEND);
+          render(this._container, this._pointComponent.getElement(), RenderPosition.BEFOREEND);
         }
         break;
-      case MODE.ADDING:
+      case Mode.EDIT:
+        if (oldEditComponent && oldPointComponent) {
+          replace(this._pointComponent, oldPointComponent);
+          replace(this._editComponent, oldEditComponent);
+        } else {
+          render(this._container, this._editComponent.getElement(), RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
         if (oldEditComponent && oldPointComponent) {
           remove(oldPointComponent);
           remove(oldEditComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        render(this._container, this._editComponent.getElement(), RENDER_POSITION.AFTERBEGIN);
+        render(this._container, this._editComponent.getElement(), RenderPosition.AFTERBEGIN);
         break;
     }
 
   }
 
   setDefaultView() {
-    if (this._mode !== MODE.DEFAULT) {
+    if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToPoint();
     }
   }
 
   shake() {
-    this._editComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    const removeAnimation = () => {
+      this._editComponent.getElement().classList.remove(`shake`);
+      this._editComponent.disableWarningFrame();
+      this._editComponent.rerender();
+    };
 
-    setTimeout(() => {
-      this._editComponent.getElement().style.animation = ``;
-      this._pointComponent.getElement().style.animation = ``;
-
-      this._editComponent.setData({
-        SAVE_TEXT: `Save`,
-        DELETE_TEXT: `Delete`,
-      });
-    }, SHAKE_ANIMATION_TIMEOUT);
+    const animate = () => {
+      this._editComponent.setDisabledForm(false);
+      this._editComponent.setDeleteButtonText(ButtonText.DELETE);
+      this._editComponent.setSaveButtonText(ButtonText.SAVE);
+      this._editComponent.enableWarningFrame();
+      this._editComponent.getElement().classList.add(`shake`);
+      setTimeout(removeAnimation, SHAKE_ANIMATION_TIMEOUT);
+    };
+    setTimeout(animate, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceEditToPoint() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-
+    this._editComponent.rerender();
     replace(this._pointComponent, this._editComponent);
-    this._mode = MODE.DEFAULT;
+    this._mode = Mode.DEFAULT;
   }
 
   _replacePointToEdit() {
     this._changeViewHandler();
 
     replace(this._editComponent, this._pointComponent);
-    this._mode = MODE.EDIT;
+    this._mode = Mode.EDIT;
   }
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      if (this._mode === MODE.ADDING) {
+      if (this._mode === Mode.ADDING) {
         this._changeDataHandler(this, EMPTY_POINT, null);
       }
       this._replaceEditToPoint();
