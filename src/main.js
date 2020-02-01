@@ -1,14 +1,15 @@
 import API from './api.js';
 import AddPointButtonComponent from "./components/add-point-button.js";
-import SiteMenuComponent, {MENU_TAB} from "./components/menu.js";
+import SiteMenuComponent from "./components/menu.js";
 import StatisticsComponent from './components/statistics.js';
 import TripController from "./controllers/trip.js";
 import PointsModel from "./models/points.js";
-import {render, RENDER_POSITION} from "./utils/render.js";
+import {render, RenderPosition} from "./utils/render.js";
 import FilterController from "./controllers/filter.js";
 import TripInfoController from "./controllers/trip-info.js";
+import {MenuTab} from "./const.js";
 
-const AUTHORIZATION = `Basic eo0w590ik29889a`;
+const AUTHORIZATION = `Basic eo0w590ik29887b`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip/`;
 
 const api = new API(END_POINT, AUTHORIZATION);
@@ -19,7 +20,7 @@ tripInfoMainElement.remove();
 const addPointButtonElement = tripMainElement.querySelector(`.trip-main__event-add-btn`);
 addPointButtonElement.remove();
 const addPointButtonComponent = new AddPointButtonComponent();
-render(tripMainElement, addPointButtonComponent.getElement(), RENDER_POSITION.BEFOREEND);
+render(tripMainElement, addPointButtonComponent.getElement(), RenderPosition.BEFOREEND);
 
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const menuTitleElement = tripControlsElement.querySelector(`h2:nth-of-type(1)`);
@@ -27,10 +28,10 @@ const filterTitleElement = tripControlsElement.querySelector(`h2:nth-of-type(2)`
 menuTitleElement.remove();
 filterTitleElement.remove();
 
-render(tripControlsElement, menuTitleElement, RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, menuTitleElement, RenderPosition.BEFOREEND);
 const siteMenuComponent = new SiteMenuComponent();
-render(tripControlsElement, siteMenuComponent.getElement(), RENDER_POSITION.BEFOREEND);
-render(tripControlsElement, filterTitleElement, RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, siteMenuComponent.getElement(), RenderPosition.BEFOREEND);
+render(tripControlsElement, filterTitleElement, RenderPosition.BEFOREEND);
 
 const pointsModel = new PointsModel();
 const filterController = new FilterController(tripControlsElement, pointsModel);
@@ -40,7 +41,7 @@ const tripInfoController = new TripInfoController(tripMainElement);
 const tripController = new TripController(tripEventsElement, pointsModel, tripInfoController, addPointButtonComponent, api);
 
 const statisticsComponent = new StatisticsComponent(pointsModel.getAllPoints());
-render(tripEventsElement, statisticsComponent.getElement(), RENDER_POSITION.BEFOREEND);
+render(tripEventsElement, statisticsComponent.getElement(), RenderPosition.BEFOREEND);
 
 Promise.all([api.getDestinations(), api.getOffers(), api.getPoints()])
   .then(([destinations, offers, points]) => {
@@ -56,11 +57,11 @@ statisticsComponent.hide();
 
 siteMenuComponent.setChangeMenuTabHandler((menuTab) => {
   switch (menuTab) {
-    case MENU_TAB.DEFAULT:
+    case MenuTab.DEFAULT:
       statisticsComponent.hide();
       tripController.show();
       break;
-    case MENU_TAB.STATS:
+    case MenuTab.STATS:
       tripController.hide();
       statisticsComponent.rerender(pointsModel.getAllPoints());
       statisticsComponent.show();

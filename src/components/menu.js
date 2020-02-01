@@ -1,9 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-
-export const MENU_TAB = {
-  DEFAULT: `Table`,
-  STATS: `Stats`
-};
+import {MenuTab} from "../const.js";
 
 const ACTIVE_BTN_CLASS = `trip-tabs__btn--active`;
 
@@ -24,8 +20,8 @@ export default class SiteMenu extends AbstractSmartComponent {
 
   constructor() {
     super();
-    this._menuTabs = [MENU_TAB.DEFAULT, MENU_TAB.STATS];
-    this._activeTab = MENU_TAB.DEFAULT;
+    this._menuTabs = [MenuTab.DEFAULT, MenuTab.STATS];
+    this._activeTab = MenuTab.DEFAULT;
     this._changeTabHandler = null;
   }
 

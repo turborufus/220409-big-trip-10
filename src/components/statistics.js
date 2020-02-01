@@ -2,7 +2,7 @@ import Chart from 'chart.js';
 import moment from 'moment';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import AbstractSmartComponent from './abstract-smart-component';
-import {ALL_TYPES, TRANSFER_TYPES} from '../const.js';
+import {AllTypes, TransferTypes} from '../const.js';
 
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
@@ -59,9 +59,9 @@ const renderMoneyChart = (ctx, points) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: ALL_TYPES,
+      labels: AllTypes,
       datasets: [{
-        data: ALL_TYPES.map((type) => calculatePointsMoneyByType(points, type)),
+        data: AllTypes.map((type) => calculatePointsMoneyByType(points, type)),
         backgroundColor: `#ffffff`,
         borderColor: `#ffffff`,
         barPercentage: 0.5,
@@ -136,9 +136,9 @@ const renderTransportChart = (ctx, points) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: TRANSFER_TYPES,
+      labels: TransferTypes,
       datasets: [{
-        data: TRANSFER_TYPES.map((type) => calculateTransportPointsByType(points, type)),
+        data: TransferTypes.map((type) => calculateTransportPointsByType(points, type)),
         backgroundColor: `#ffffff`,
         borderColor: `#ffffff`,
         barPercentage: 0.5,

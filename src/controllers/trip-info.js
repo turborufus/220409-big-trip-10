@@ -1,5 +1,5 @@
 import TripInfoComponent from '../components/trip-info.js';
-import {render, RENDER_POSITION, remove} from '../utils/render.js';
+import {render, RenderPosition, remove} from '../utils/render.js';
 
 export default class TripInfo {
   constructor(container) {
@@ -14,6 +14,6 @@ export default class TripInfo {
     if (oldInfoComponent) {
       remove(oldInfoComponent);
     }
-    render(this._container, tripInfoElement, RENDER_POSITION.AFTERBEGIN);
+    render(this._container, tripInfoElement, RenderPosition.AFTERBEGIN);
   }
 }
