@@ -1,12 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
+import {SortType} from "../const.js";
 
-export const SORT_TYPE = {
-  EVENT: `event`,
-  TIME: `time`,
-  PRICE: `price`
-};
-
-const sortTypeList = [SORT_TYPE.EVENT, SORT_TYPE.TIME, SORT_TYPE.PRICE];
+const sortTypeList = [SortType.EVENT, SortType.TIME, SortType.PRICE];
 
 const createSortItemMarkup = (sortType, isChecked) => {
   const sortId = `sort-${sortType}`;
@@ -30,7 +25,7 @@ const createSortTemplate = (currentSortType) => {
 export default class Sort extends AbstractSmartComponent {
   constructor() {
     super();
-    this._currentSortType = SORT_TYPE.EVENT;
+    this._currentSortType = SortType.EVENT;
     this._sortTypeChangeHangler = null;
   }
 

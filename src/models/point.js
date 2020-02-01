@@ -52,7 +52,7 @@ export default class Point {
   }
 
   static clone(point) {
-    return new Point(point.toRaw);
+    return new Point(point.toRAW());
   }
 
   _getDestination(data) {
