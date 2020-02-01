@@ -1,13 +1,14 @@
-import {FILTER_TYPE} from "../const.js";
-import {generateID} from '../utils/common.js';
+import {FilterType, SortType} from "../const.js";
 import {getPointsByFilter} from "../utils/filter.js";
+import {sortByType} from "../utils/sort.js";
 
 export default class Points {
   constructor() {
     this._points = [];
     this._offers = [];
     this._destinations = [];
-    this._activeFilterType = FILTER_TYPE.ALL;
+    this._activeFilterType = FilterType.ALL;
+    this._activeSortType = SortType.EVENT;
 
     this._filterChangeHandlers = [];
   }
@@ -21,7 +22,7 @@ export default class Points {
   }
 
   getPoints() {
-    return getPointsByFilter(this._points, this._activeFilterType);
+    return sortByType(getPointsByFilter(this._points, this._activeFilterType), this._activeSortType);
   }
 
   getAllPoints() {
@@ -31,6 +32,10 @@ export default class Points {
   setFilter(filterType) {
     this._activeFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers);
+  }
+
+  setSortType(sortType) {
+    this._activeSortType = sortType;
   }
 
   setDestinations(destinations) {
@@ -46,7 +51,6 @@ export default class Points {
   }
 
   addPoint(point) {
-    point.id = generateID();
     this._points = [].concat(point, this._points);
   }
 
@@ -81,4 +85,5 @@ export default class Points {
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }
+
 }
