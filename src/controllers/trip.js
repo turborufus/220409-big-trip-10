@@ -145,7 +145,7 @@ export default class TripController {
     dayListElement.innerHTML = ``;
   }
 
-  _changeDataHandler(pointController, oldData, newData) {
+  _changeDataHandler(pointController, oldData, newData, isFavorite = false) {
     let isSuccess = false;
     if (oldData === EMPTY_POINT) {
       this._creatingPoint = null;
@@ -169,7 +169,11 @@ export default class TripController {
           isSuccess = pointsModel.updatePoint(oldData.id, pointModel);
 
           if (isSuccess) {
-            pointController.render(pointModel, Mode.EDIT, pointsModel.getDestinations(), pointsModel.getOffers());
+            if (isFavorite) {
+              pointController.render(pointModel, Mode.EDIT, pointsModel.getDestinations(), pointsModel.getOffers());
+            } else {
+              this._updatePoints();
+            }
             this._updateTripInfo();
           }
         })

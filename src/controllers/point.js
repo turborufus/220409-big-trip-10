@@ -134,7 +134,7 @@ export default class PointController {
       }
       const newPoint = PointModel.clone(point);
       newPoint.isFavorite = !point.isFavorite;
-      this._changeDataHandler(this, point, newPoint);
+      this._changeDataHandler(this, point, newPoint, true);
     });
 
     switch (mode) {
