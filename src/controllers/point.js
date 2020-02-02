@@ -139,17 +139,12 @@ export default class PointController {
 
     switch (mode) {
       case Mode.DEFAULT:
-        if (oldEditComponent && oldPointComponent) {
-          replace(this._pointComponent, oldPointComponent);
-          replace(this._editComponent, oldEditComponent);
-        } else {
-          render(this._container, this._pointComponent.getElement(), RenderPosition.BEFOREEND);
-        }
-        break;
       case Mode.EDIT:
         if (oldEditComponent && oldPointComponent) {
           replace(this._pointComponent, oldPointComponent);
           replace(this._editComponent, oldEditComponent);
+        } else if (mode === Mode.DEFAULT) {
+          render(this._container, this._pointComponent.getElement(), RenderPosition.BEFOREEND);
         } else {
           render(this._container, this._editComponent.getElement(), RenderPosition.BEFOREEND);
         }
@@ -215,4 +210,5 @@ export default class PointController {
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
+
 }
